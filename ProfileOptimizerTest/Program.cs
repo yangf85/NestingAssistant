@@ -2,28 +2,35 @@
 // 初始化材料列表
 using ProfileOptimizer.Nesting;
 
-
-var materials = new List<ProfileMaterial>
-{
-    new ProfileMaterial("Material1", 5, 100),   // Category, Piece, Length
-    new ProfileMaterial("Material2", 3, 150),
-    new ProfileMaterial("Material3", 4, 120)
-};
-
-var parts = new List<ProfilePart>
-{
-    new ProfilePart("Material1", "Label1", 2, 30),   // Category, Label, Piece, Length
-    new ProfilePart("Material1", "Label2", 3, 50),
-    new ProfilePart("Material2", "Label3", 1, 80),
-    new ProfilePart("Material2", "Label4", 4, 40),
-    new ProfilePart("Material3", "Label5", 2, 60)
-};
-
 var option = new NestingOption
 {
-    Spacing = 2,   // 切割缝隙
-    MaxSegments = 10   // 每根型材最多切割多少段
+    Spacing = 0.5,
+    MaxSegments = 10,
+    PopulationSize = 100,
+    Generations = 200,
+    MutationRate = 0.05
 };
 
+var materials = new List<ProfileMaterial>
+        {
+            new ProfileMaterial("Category1", 3, 12.0),
+            new ProfileMaterial("Category2", 2, 15.0),
+            new ProfileMaterial("Category3", 1, 20.0)
+        };
 
+var parts = new List<ProfilePart>
+        {
+            new ProfilePart("Category1", "PartA", 2, 4.0),
+            new ProfilePart("Category1", "PartB", 1, 6.0),
+            new ProfilePart("Category2", "PartC", 3, 5.0),
+            new ProfilePart("Category3", "PartD", 1, 10.0),
+            new ProfilePart("Category3", "PartE", 1, 8.0)
+        };
 
+var nester = new ProfileNester(option);
+var results = nester.Nest(materials, parts);
+
+foreach (var result in results)
+{
+    Console.WriteLine(result);
+}
