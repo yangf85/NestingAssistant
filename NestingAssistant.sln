@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NestingAssistant", "Nesting
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NestingAssistant.Desktop", "NestingAssistant.Desktop\NestingAssistant.Desktop.csproj", "{EDDD328D-C46B-433A-A659-0749B212A5F0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfileOptimizer", "ProfileOptimizer\ProfileOptimizer.csproj", "{AEFFF93A-7E3A-498B-8C6D-322B8B0FDA0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfileOptimizerTest", "ProfileOptimizerTest\ProfileOptimizerTest.csproj", "{85D65127-8143-4DD7-9182-3E9DE8CA8E89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{EDDD328D-C46B-433A-A659-0749B212A5F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDDD328D-C46B-433A-A659-0749B212A5F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDDD328D-C46B-433A-A659-0749B212A5F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEFFF93A-7E3A-498B-8C6D-322B8B0FDA0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEFFF93A-7E3A-498B-8C6D-322B8B0FDA0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEFFF93A-7E3A-498B-8C6D-322B8B0FDA0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEFFF93A-7E3A-498B-8C6D-322B8B0FDA0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85D65127-8143-4DD7-9182-3E9DE8CA8E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85D65127-8143-4DD7-9182-3E9DE8CA8E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85D65127-8143-4DD7-9182-3E9DE8CA8E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85D65127-8143-4DD7-9182-3E9DE8CA8E89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
