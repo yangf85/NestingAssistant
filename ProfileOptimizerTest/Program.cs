@@ -2,35 +2,42 @@
 // 初始化材料列表
 using ProfileOptimizer.Nesting;
 
-var option = new NestingOption
+// 原材料
+List<ProfileMaterial> materials = new List<ProfileMaterial>
+        {
+            new ProfileMaterial("A", 5, 1050),
+            new ProfileMaterial("A", 10, 800),
+            new ProfileMaterial("B", 8, 1200) 
+           
+        };
+
+// 型材零件
+List<ProfilePart> parts = new List<ProfilePart>
+        {
+            new ProfilePart("A", "Part1", 10, 500),
+            new ProfilePart("A", "Part2", 8, 300),
+            new ProfilePart("B", "Part3", 6, 400),
+            new ProfilePart("B", "Part4", 5, 600),
+            new ProfilePart("A", "Part5", 3, 600),
+            new ProfilePart("B", "Part6", 5, 600),
+        };
+
+// NestingOption 设置
+NestingOption option = new NestingOption
 {
-    Spacing = 0.5,
-    MaxSegments = 10,
-    PopulationSize = 100,
-    Generations = 200,
-    MutationRate = 0.05
+    Spacing = 20,
+    MaxSegments = 3,
+    PopulationSize = 50,
+    Generations = 100,
+    MutationRate = 0.1
 };
 
-var materials = new List<ProfileMaterial>
-        {
-            new ProfileMaterial("Category1", 3, 12.0),
-            new ProfileMaterial("Category2", 2, 15.0),
-            new ProfileMaterial("Category3", 1, 20.0)
-        };
+// 创建 ProfileNester 实例并执行 Nest 方法
+ProfileNester nester = new ProfileNester();
+List<ProfileNestingResult> results = nester.Nest(materials, parts, option);
 
-var parts = new List<ProfilePart>
-        {
-            new ProfilePart("Category1", "PartA", 2, 4.0),
-            new ProfilePart("Category1", "PartB", 1, 6.0),
-            new ProfilePart("Category2", "PartC", 3, 5.0),
-            new ProfilePart("Category3", "PartD", 1, 10.0),
-            new ProfilePart("Category3", "PartE", 1, 8.0)
-        };
-
-var nester = new ProfileNester(option);
-var results = nester.Nest(materials, parts);
-
+// 输出结果
 foreach (var result in results)
 {
-    Console.WriteLine(result);
+    Console.WriteLine(result.ToString());
 }

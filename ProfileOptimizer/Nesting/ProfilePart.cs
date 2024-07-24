@@ -8,15 +8,9 @@ namespace ProfileOptimizer.Nesting;
 
 public class NestingOption
 {
-    // 切割缝隙
     public double Spacing { get; set; }
-
-    // 每根型材最多切割多少段
-    public int MaxSegments { get; set; }
-
-    // 遗传算法的参数
+    public int MaxSegments { get; set; } = 10;
     public int PopulationSize { get; set; } = 50;
-
     public int Generations { get; set; } = 100;
     public double MutationRate { get; set; } = 0.1;
 }
@@ -51,25 +45,98 @@ public class ProfileMaterial
     public double Length { get; set; }
 }
 
-public class PlacedProfilePart
+public class PlacedProfilePart : IEquatable<PlacedProfilePart>, IComparable<PlacedProfilePart>
 {
     public string Category { get; set; } = string.Empty;
     public string Label { get; set; } = string.Empty;
     public int Piece { get; set; }
     public double Length { get; set; }
+
+    public int CompareTo(PlacedProfilePart? other)
+    {
+        if (other is null)
+        {
+            return 1;
+        }
+
+        int categoryComparison = string.Compare(Category, other.Category, StringComparison.Ordinal);
+        if (categoryComparison != 0)
+        {
+            return categoryComparison;
+        }
+
+        int labelComparison = string.Compare(Label, other.Label, StringComparison.Ordinal);
+        if (labelComparison != 0)
+        {
+            return labelComparison;
+        }
+
+        int lengthComparison = Length.CompareTo(other.Length);
+        if (lengthComparison != 0)
+        {
+            return lengthComparison;
+        }
+
+        return Piece.CompareTo(other.Piece);
+    }
+
+    public bool Equals(PlacedProfilePart? other)
+    {
+        if (other is null) return false;
+        return Category == other.Category &&
+               Label == other.Label &&
+               Piece == other.Piece &&
+               Math.Abs(Length - other.Length) < 1e-10;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as PlacedProfilePart);
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 23 + Category.GetHashCode();
+            hash = hash * 23 + Label.GetHashCode();
+            hash = hash * 23 + Piece.GetHashCode();
+            long lengthBits = BitConverter.DoubleToInt64Bits(Length);
+            hash = hash * 23 + lengthBits.GetHashCode();
+            return hash;
+        }
+    }
 }
 
-public class ProfileNestingResult
+public class ProfileNestingResult : IEquatable<ProfileNestingResult>
 {
     public string Category { get; set; }
     public int Piece { get; set; }
     public double Length { get; set; }
+    public double Spacing { get; set; }
+    public List<PlacedProfilePart> Parts { get; set; } = new List<PlacedProfilePart>();
 
-    public List<PlacedProfilePart> Parts { get; set; }
+ 
+    public double RemainLength => CalculateRemainLength();
+    public double Utilization => CalculateUtilization();
 
     public ProfileNestingResult()
     {
         Parts = new List<PlacedProfilePart>();
+    }
+
+    public void Merge()
+    {
+        var parts = Parts.GroupBy(i => new { i.Category, i.Label, i.Length })
+                         .Select(g =>
+                         {
+                             var first = g.First();
+                             first.Piece = g.Sum(i => i.Piece);
+                             return first;
+                         }).ToList();
+
+        Parts = parts;
     }
 
     public override string ToString()
@@ -80,7 +147,7 @@ public class ProfileNestingResult
         }
 
         var builder = new StringBuilder();
-        builder.AppendLine($"Category: {Category}, Piece: {Piece}, Length: {Length}");
+        builder.AppendLine($"Category: {Category}, Piece: {Piece}, Length: {Length}, RemainLength: {RemainLength}");
         foreach (var item in Parts)
         {
             builder.AppendLine($"  Part Label: {item.Label}, Piece: {item.Piece}, Length: {item.Length}");
@@ -89,7 +156,17 @@ public class ProfileNestingResult
         return builder.ToString();
     }
 
-    public double Utilization => CalculateUtilization();
+    private double CalculateRemainLength()
+    {
+        if (Parts.Count == 0)
+        {
+            return Length;
+        }
+
+        var partLength = Parts.Sum(i => i.Length * i.Piece);
+        var spacingLength = (Parts.Count - 1) * Spacing;
+        return Length - partLength - spacingLength;
+    }
 
     private double CalculateUtilization()
     {
@@ -100,34 +177,222 @@ public class ProfileNestingResult
 
         return Parts.Sum(i => i.Length * i.Piece) / Length;
     }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as ProfileNestingResult);
+    }
+
+    public bool Equals(ProfileNestingResult other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        if (Category != other.Category || Length != other.Length)
+        {
+            return false;
+        }
+
+        Parts.Sort();
+        other.Parts.Sort();
+        return Parts.SequenceEqual(other.Parts);
+    }
+
+    public override int GetHashCode()
+    {
+        int hashCode = Category.GetHashCode();
+        hashCode = (hashCode * 397) ^ Length.GetHashCode();
+
+        foreach (var part in Parts)
+        {
+            hashCode = (hashCode * 397) ^ part.GetHashCode();
+        }
+
+        return hashCode;
+    }
 }
 
 public class ProfileNester
 {
-    private readonly NestingOption _option;
-    private readonly Random _random;
-    private int currentGeneration;
+    private readonly Random _random = new Random();
 
-    public ProfileNester(NestingOption option)
+    public List<ProfileNestingResult> Nest(List<ProfileMaterial> materials, List<ProfilePart> parts, NestingOption option)
     {
-        _option = option;
-        _random = new Random();
-        currentGeneration = 0;
-    }
+        Validate(materials, parts, option);
 
-    public List<ProfileNestingResult> Nest(List<ProfileMaterial> materials, List<ProfilePart> parts)
-    {
-        Validate(materials, parts, _option);
+        var materialGroups = materials.GroupBy(m => m.Category).ToDictionary(g => g.Key, g => g.ToList());
+        var partGroups = parts.GroupBy(p => p.Category).ToDictionary(g => g.Key, g => g.ToList());
 
-        var population = InitializePopulation(_option.PopulationSize, parts);
+        var results = new List<ProfileNestingResult>();
 
-        for (currentGeneration = 0; currentGeneration < _option.Generations; currentGeneration++)
+        foreach (var category in partGroups.Keys)
         {
-            population = EvolvePopulation(population, materials, _option.MutationRate);
+            var materialList = materialGroups[category];
+            var partList = partGroups[category];
+
+            var bestSolution = RunGeneticAlgorithm(materialList, partList, option);
+
+            results.AddRange(bestSolution);
         }
 
-        var bestIndividual = population.MaxBy(p => CalculateFitness(p.Value, materials));
-        return ConvertToNestingResults(bestIndividual.Value, materials);
+        return MergeResults(results);
+    }
+
+    private List<ProfileNestingResult> RunGeneticAlgorithm(List<ProfileMaterial> materials, List<ProfilePart> parts, NestingOption option)
+    {
+        var population = InitializePopulation(materials, parts, option);
+
+        for (var generation = 0; generation < option.Generations; generation++)
+        {
+            var newPopulation = new List<List<ProfileNestingResult>>();
+
+            for (var i = 0; i < option.PopulationSize / 2; i++)
+            {
+                var parent1 = Select(population);
+                var parent2 = Select(population);
+
+                var children = Crossover(parent1, parent2, option);
+                newPopulation.Add(Mutate(children[0], option));
+                newPopulation.Add(Mutate(children[1], option));
+            }
+
+            population = newPopulation;
+        }
+
+        return population.OrderByDescending(solution => CalculateFitness(solution)).First();
+    }
+
+    private List<List<ProfileNestingResult>> InitializePopulation(List<ProfileMaterial> materials, List<ProfilePart> parts, NestingOption option)
+    {
+        var population = new List<List<ProfileNestingResult>>();
+
+        for (var i = 0; i < option.PopulationSize; i++)
+        {
+            var solution = new List<ProfileNestingResult>();
+            var materialCounts = materials.ToDictionary(m => m, m => m.Piece);
+
+            foreach (var material in materials)
+            {
+                while (materialCounts[material] > 0)
+                {
+                    var nestingResult = new ProfileNestingResult
+                    {
+                        Category = material.Category,
+                        Piece = 1,
+                        Length = material.Length,
+                        Spacing = option.Spacing
+                    };
+
+                    var assignedParts = parts.Where(p => p.Category == material.Category).OrderBy(p => _random.Next()).ToList();
+                    var remainingLength = material.Length;
+                    var segments = 0;
+                    var partCounts = assignedParts.ToDictionary(p => p, p => p.Piece);
+
+                    foreach (var part in assignedParts)
+                    {
+                        while (segments < option.MaxSegments && remainingLength >= (part.Length + option.Spacing) && partCounts[part] > 0)
+                        {
+                            nestingResult.Parts.Add(new PlacedProfilePart
+                            {
+                                Category = part.Category,
+                                Label = part.Label,
+                                Piece = 1,
+                                Length = part.Length
+                            });
+
+                            remainingLength -= (part.Length + option.Spacing);
+                            partCounts[part] -= 1;
+                            segments++;
+                        }
+                    }
+
+                    if (nestingResult.Parts.Any())
+                    {
+                        solution.Add(nestingResult);
+                        materialCounts[material] -= 1;
+                    }
+                }
+            }
+
+            population.Add(solution);
+        }
+
+        return population;
+    }
+
+    private List<ProfileNestingResult> Select(List<List<ProfileNestingResult>> population)
+    {
+        var totalFitness = population.Sum(solution => CalculateFitness(solution));
+        var randomValue = _random.NextDouble() * totalFitness;
+
+        var runningSum = 0.0;
+        foreach (var solution in population)
+        {
+            runningSum += CalculateFitness(solution);
+            if (runningSum >= randomValue)
+            {
+                return solution;
+            }
+        }
+
+        return population.Last();
+    }
+
+    private List<List<ProfileNestingResult>> Crossover(List<ProfileNestingResult> parent1, List<ProfileNestingResult> parent2, NestingOption option)
+    {
+        var children = new List<List<ProfileNestingResult>>();
+
+        var count = parent1.Count;
+        if (count < 2)
+        {
+            children.Add(parent1);
+            children.Add(parent2);
+            return children;
+        }
+
+        var crossoverPoint1 = _random.Next(1, count);
+        var crossoverPoint2 = _random.Next(crossoverPoint1, count);
+
+        var child1 = parent1.Take(crossoverPoint1)
+            .Concat(parent2.Skip(crossoverPoint1).Take(crossoverPoint2 - crossoverPoint1))
+            .Concat(parent1.Skip(crossoverPoint2)).ToList();
+
+        var child2 = parent2.Take(crossoverPoint1)
+            .Concat(parent1.Skip(crossoverPoint1).Take(crossoverPoint2 - crossoverPoint1))
+            .Concat(parent2.Skip(crossoverPoint2)).ToList();
+
+        children.Add(child1);
+        children.Add(child2);
+
+        return children;
+    }
+
+    private List<ProfileNestingResult> Mutate(List<ProfileNestingResult> solution, NestingOption option)
+    {
+        if (_random.NextDouble() < option.MutationRate)
+        {
+            var materialIndex = _random.Next(solution.Count);
+            var material = solution[materialIndex];
+
+            if (material.Parts.Count > 1)
+            {
+                var partIndex1 = _random.Next(material.Parts.Count);
+                var partIndex2 = _random.Next(material.Parts.Count);
+
+                var temp = material.Parts[partIndex1];
+                material.Parts[partIndex1] = material.Parts[partIndex2];
+                material.Parts[partIndex2] = temp;
+            }
+        }
+
+        return solution;
+    }
+
+    private double CalculateFitness(List<ProfileNestingResult> solution)
+    {
+        return solution.Average(result => result.Utilization);
     }
 
     private void Validate(List<ProfileMaterial> materials, List<ProfilePart> parts, NestingOption option)
@@ -159,165 +424,17 @@ public class ProfileNester
         }
     }
 
-    private Dictionary<int, List<PlacedProfilePart>> InitializePopulation(int populationSize, List<ProfilePart> parts)
+    private List<ProfileNestingResult> MergeResults(List<ProfileNestingResult> results)
     {
-        var population = new Dictionary<int, List<PlacedProfilePart>>();
-        for (int i = 0; i < populationSize; i++)
-        {
-            var individual = new List<PlacedProfilePart>();
-            foreach (var part in parts)
-            {
-                for (int j = 0; j < part.Piece; j++)
-                {
-                    individual.Add(new PlacedProfilePart
-                    {
-                        Category = part.Category,
-                        Label = part.Label,
-                        Piece = 1,
-                        Length = part.Length
-                    });
-                }
-            }
-            // Randomize order of parts
-            individual = individual.OrderBy(p => _random.Next()).ToList();
-            population.Add(i, individual);
-        }
-        return population;
-    }
-
-    private Dictionary<int, List<PlacedProfilePart>> EvolvePopulation(Dictionary<int, List<PlacedProfilePart>> population, List<ProfileMaterial> materials, double mutationRate)
-    {
-        var newPopulation = new Dictionary<int, List<PlacedProfilePart>>();
-        int newIndividualId = 0;
-
-        var bestIndividual = population.MaxBy(p => CalculateFitness(p.Value, materials));
-        newPopulation.Add(newIndividualId++, bestIndividual.Value); // Elite individual
-
-        var populationList = population.Values.ToList();
-        for (int i = 0; i < (populationList.Count - 1) / 2; i++)
-        {
-            var parent1 = SelectIndividual(populationList, materials);
-            var parent2 = SelectIndividual(populationList, materials);
-
-            var offspring1 = Crossover(parent1, parent2);
-            var offspring2 = Crossover(parent2, parent1);
-
-            Mutate(offspring1, mutationRate);
-            Mutate(offspring2, mutationRate);
-
-            newPopulation.Add(newIndividualId++, offspring1);
-            newPopulation.Add(newIndividualId++, offspring2);
-        }
-
-        return newPopulation;
-    }
-
-    private List<PlacedProfilePart> SelectIndividual(List<List<PlacedProfilePart>> population, List<ProfileMaterial> materials)
-    {
-        var tournamentSize = 5;
-        var tournament = new List<List<PlacedProfilePart>>();
-
-        for (int i = 0; i < tournamentSize; i++)
-        {
-            var randomIndex = _random.Next(population.Count);
-            tournament.Add(population[randomIndex]);
-        }
-
-        return tournament.MaxBy(individual => CalculateFitness(individual, materials));
-    }
-
-    private List<PlacedProfilePart> Crossover(List<PlacedProfilePart> parent1, List<PlacedProfilePart> parent2)
-    {
-        var crossoverPoint1 = _random.Next(parent1.Count);
-        var crossoverPoint2 = _random.Next(crossoverPoint1, parent1.Count);
-        var offspring = parent1.Take(crossoverPoint1)
-                              .Concat(parent2.Skip(crossoverPoint1).Take(crossoverPoint2 - crossoverPoint1))
-                              .Concat(parent1.Skip(crossoverPoint2)).ToList();
-        return offspring;
-    }
-
-    private void Mutate(List<PlacedProfilePart> individual, double mutationRate)
-    {
-        double adaptiveMutationRate = mutationRate * (1 - (double)currentGeneration / _option.Generations);
-        for (int i = 0; i < individual.Count; i++)
-        {
-            if (_random.NextDouble() < adaptiveMutationRate)
-            {
-                var randomIndex = _random.Next(individual.Count);
-                var temp = individual[i];
-                individual[i] = individual[randomIndex];
-                individual[randomIndex] = temp;
-            }
-        }
-    }
-
-    private double CalculateFitness(List<PlacedProfilePart> individual, List<ProfileMaterial> materials)
-    {
-        double fitness = 0.0;
-
-        var materialGroups = materials.GroupBy(m => m.Category).ToDictionary(g => g.Key, g => g.ToList());
-        var partGroups = individual.GroupBy(p => p.Category).ToDictionary(g => g.Key, g => g.ToList());
-
-        foreach (var category in partGroups.Keys)
-        {
-            if (!materialGroups.ContainsKey(category))
-            {
-                continue;
-            }
-
-            double totalUsedLength = 0.0;
-            double totalMaterialLength = materialGroups[category].Sum(m => m.Length * m.Piece);
-
-            foreach (var part in partGroups[category])
-            {
-                totalUsedLength += (part.Length + _option.Spacing);
-            }
-
-            // Ensure fitness value is normalized and reflects utilization rate
-            fitness += totalUsedLength / totalMaterialLength;
-        }
-
-        return fitness;
-    }
-
-    private List<ProfileNestingResult> ConvertToNestingResults(List<PlacedProfilePart> individual, List<ProfileMaterial> materials)
-    {
-        var results = new List<ProfileNestingResult>();
-
-        var individualGroups = individual.GroupBy(p => p.Category).ToDictionary(g => g.Key, g => g.ToList());
-
-        foreach (var material in materials)
-        {
-            var remainingLength = material.Length;
-            var segmentCount = 0;
-            var placedParts = new List<PlacedProfilePart>();
-
-            if (individualGroups.ContainsKey(material.Category))
-            {
-                foreach (var part in individualGroups[material.Category])
-                {
-                    var partLengthWithSpacing = part.Length + _option.Spacing;
-
-                    if (remainingLength >= partLengthWithSpacing && segmentCount < _option.MaxSegments)
-                    {
-                        placedParts.Add(part);
-                        remainingLength -= partLengthWithSpacing;
-                        segmentCount++;
-                    }
-                }
-            }
-
-            var result = new ProfileNestingResult
-            {
-                Category = material.Category,
-                Piece = material.Piece,
-                Length = material.Length,
-                Parts = placedParts
-            };
-
-            results.Add(result);
-        }
-
-        return results;
+        return results.GroupBy(r => r)
+                      .Select(g =>
+                      {
+                          var mergedResult = g.First();
+                          mergedResult.Piece = g.Count();
+                          mergedResult.Merge();
+                          return mergedResult;
+                      })
+                      .ToList();
     }
 }
+
