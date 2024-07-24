@@ -5,9 +5,13 @@
     xmlns:semi="https://irihi.tech/semi"
     xmlns:u-semi="https://irihi.tech/ursa/themes/semi"
     RequestedThemeVariant="Default">
-    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
-    <Application.Styles>
-        <semi:SemiTheme />
-        <u-semi:SemiTheme />
-    </Application.Styles>
+	<!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
+	<Application.Styles>
+		<semi:SemiTheme />
+		<u-semi:SemiTheme />
+		<StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
+	</Application.Styles>
+	<Application.Resources>
+		<FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
+	</Application.Resources>
 </Application>

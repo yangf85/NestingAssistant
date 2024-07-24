@@ -2,9 +2,12 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using NestingAssistant.Services;
 using NestingAssistant.ViewModels;
 using NestingAssistant.Views;
+using System;
 
 namespace NestingAssistant;
 
@@ -15,10 +18,15 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
+    public override void RegisterServices()
+    {
+        base.RegisterServices();
+    }
+
     public override void OnFrameworkInitializationCompleted()
     {
-        // Line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and CT
+        Ioc.Default.ConfigureServices(ConfigureServices());
+
         BindingPlugins.DataValidators.RemoveAt(0);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -28,14 +36,21 @@ public partial class App : Application
                 DataContext = new MainViewModel()
             };
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
-            };
-        }
+    }
 
-        base.OnFrameworkInitializationCompleted();
+    private static IServiceProvider ConfigureServices()
+    {
+        var services = new ServiceCollection();
+
+        services.AddSingleton<NestingOption>();
+        services.AddTransient<ProfilePartViewModel>();
+        services.AddTransient<PlacedProfilePartViewModel>();
+        services.AddTransient<ProfileMaterialViewModel>();
+        services.AddTransient<ProfileNestingResultViewModel>();
+        services.AddSingleton<ProfileNestingViewModel>();
+
+        services.AddSingleton<IExcelService, ExcelService>();
+
+        return services.BuildServiceProvider();
     }
 }

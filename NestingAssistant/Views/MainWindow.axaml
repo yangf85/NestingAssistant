@@ -10,10 +10,26 @@
     Title="NestingAssistant"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Icon="/Assets/avalonia-logo.ico"
     mc:Ignorable="d">
-    <u:UrsaWindow.RightContent>
-        <u:ThemeToggleButton IsThreeState="True" Mode="Controller" />
-    </u:UrsaWindow.RightContent>
-    <views:MainView />
+	<u:UrsaWindow.RightContent>
+		<u:ThemeToggleButton IsThreeState="True" Mode="Controller" />
+	</u:UrsaWindow.RightContent>
+	<u:UrsaWindow.LeftContent>
+		<StackPanel Margin="5,0,0,0" Orientation="Horizontal">
+			<Image
+                Width="25"
+                Height="25"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Source="/Assets/avalonia-logo.ico"
+                UseLayoutRounding="True" />
+			<TextBlock VerticalAlignment="Center" Text="NestingAssistant" />
+		</StackPanel>
+	</u:UrsaWindow.LeftContent>
+
+	<views:ProfileNestingView Margin="0,30,0,0">
+		<views:ProfileNestingView.DataContext>
+			<vm:ProfileNestingViewModel />
+		</views:ProfileNestingView.DataContext>
+	</views:ProfileNestingView>
 </u:UrsaWindow>

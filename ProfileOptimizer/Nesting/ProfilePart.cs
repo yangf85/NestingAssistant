@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -114,7 +115,7 @@ public class PlacedProfilePart : IEquatable<PlacedProfilePart>, IComparable<Plac
     }
 }
 
-public class ProfileNestingResult : IEquatable<ProfileNestingResult>
+public class ProfileNestingResult : IEquatable<ProfileNestingResult> ,IComparable<ProfileNestingResult>
 {
     public string Category { get; set; }
     public int Piece { get; set; }
@@ -133,7 +134,7 @@ public class ProfileNestingResult : IEquatable<ProfileNestingResult>
 
     public void Merge()
     {
-        var parts = Parts.GroupBy(i => new { i.Category, i.Label, i.Length })
+        var parts = Parts.GroupBy(i => (i.Category, i.Label,i.Length))
                          .Select(g =>
                          {
                              var first = g.First();
@@ -152,12 +153,12 @@ public class ProfileNestingResult : IEquatable<ProfileNestingResult>
         }
 
         var builder = new StringBuilder();
-        builder.AppendLine($"Category: {Category}, Piece: {Piece}, Length: {Length}, RemainLength: {RemainLength}");
+        builder.AppendLine($"{Length}" );
         foreach (var item in Parts)
         {
-            builder.AppendLine($"  Part Label: {item.Label}, Piece: {item.Piece}, Length: {item.Length}");
+            builder.Append($"{item.Label}:{item.Length}={item.Piece} ");
         }
-        builder.AppendLine($"Utilization: {Utilization:P}");
+  
         return builder.ToString();
     }
 
@@ -217,15 +218,58 @@ public class ProfileNestingResult : IEquatable<ProfileNestingResult>
 
         return hashCode;
     }
+
+    public int CompareTo(ProfileNestingResult? other)
+    {
+        if (other is null)
+        {
+            return 1;
+        }
+
+        int categoryComparison = string.Compare(Category, other.Category, StringComparison.Ordinal);
+        if (categoryComparison != 0)
+        {
+            return categoryComparison;
+        }
+
+        int lengthComparison = Length.CompareTo(other.Length);
+        if (lengthComparison != 0)
+        {
+            return lengthComparison;
+        }
+
+        return Piece.CompareTo(other.Piece);
+
+    }
 }
 
 public class ProfileNester
 {
     private readonly Random _random = new Random();
 
+
+    void AmendmentMaterialLength(IEnumerable<ProfileMaterial> materials)
+    {
+        foreach (var item in materials)
+        {
+            item.Length = Math.Round(item.Length, 6);
+        }
+    }
+
+    void AmendmentPartLenth(IEnumerable<ProfilePart> materials)
+    {
+        foreach (var item in materials)
+        {
+            item.Length = Math.Round(item.Length, 6);
+        }
+    }
+
+
     public List<ProfileNestingResult> Nest(List<ProfileMaterial> materials, List<ProfilePart> parts, NestingOption option)
     {
         Validate(materials, parts, option);
+        AmendmentMaterialLength(materials);
+        AmendmentPartLenth(parts);
 
         var materialGroups = materials.GroupBy(m => m.Category).ToDictionary(g => g.Key, g => g.ToList());
         var partGroups = parts.GroupBy(p => p.Category).ToDictionary(g => g.Key, g => g.ToList());
@@ -386,9 +430,7 @@ public class ProfileNester
                 var partIndex1 = _random.Next(material.Parts.Count);
                 var partIndex2 = _random.Next(material.Parts.Count);
 
-                var temp = material.Parts[partIndex1];
-                material.Parts[partIndex1] = material.Parts[partIndex2];
-                material.Parts[partIndex2] = temp;
+                (material.Parts[partIndex2], material.Parts[partIndex1]) = (material.Parts[partIndex1], material.Parts[partIndex2]);
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -14,16 +14,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.11" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.11" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.11" />
+    <PackageReference Include="Avalonia" Version="11.1.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.11" />
-    <PackageReference Include="Irihi.Ursa" Version="0.3.0-beta20240708" />
-    <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="0.3.0-beta20240708" />
-    <PackageReference Include="Semi.Avalonia" Version="11.0.7.4" />
-    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.0.7.2" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0" />
+    <PackageReference Include="Irihi.Ursa" Version="1.0.0-rc1" />
+    <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="1.0.0-rc1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="MiniExcel" Version="1.34.0" />
+    <PackageReference Include="Semi.Avalonia" Version="11.1.0" />
+    <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.1.0" />
   </ItemGroup>
 </Project>
