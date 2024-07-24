@@ -8,10 +8,15 @@ namespace ProfileOptimizer.Nesting;
 
 public class NestingOption
 {
+    //切割间隙
     public double Spacing { get; set; }
+    //最大切割数
     public int MaxSegments { get; set; } = 10;
+    //种群大小
     public int PopulationSize { get; set; } = 50;
+    //迭代次数
     public int Generations { get; set; } = 100;
+    //变异率
     public double MutationRate { get; set; } = 0.1;
 }
 
