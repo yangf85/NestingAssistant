@@ -11,6 +11,13 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+	<u:UrsaWindow.Effect>
+		<DropShadowEffect
+            BlurRadius="3"
+            Opacity="0.5"
+            Color="Black" />
+	</u:UrsaWindow.Effect>
+
 	<u:UrsaWindow.RightContent>
 		<u:ThemeToggleButton IsThreeState="True" Mode="Controller" />
 	</u:UrsaWindow.RightContent>
@@ -27,9 +34,5 @@
 		</StackPanel>
 	</u:UrsaWindow.LeftContent>
 
-	<views:ProfileNestingView Margin="0,30,0,0">
-		<views:ProfileNestingView.DataContext>
-			<vm:ProfileNestingViewModel />
-		</views:ProfileNestingView.DataContext>
-	</views:ProfileNestingView>
+	<views:ProfileNestingView Margin="0,30,0,0" />
 </u:UrsaWindow>

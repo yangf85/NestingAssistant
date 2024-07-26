@@ -9,14 +9,14 @@ namespace NestingAssistant.Services
 {
     public class ExcelService : IExcelService
     {
-        public List<T> ImportExcel<T>(string filePath) where T : class, new()
+        public Task<IEnumerable<T>> Import<T>(string filePath) where T : class, new()
         {
-            return MiniExcel.Query<T>(filePath).ToList();
+            return MiniExcel.QueryAsync<T>(filePath);
         }
 
-        public void ExportExcel<T>(List<T> data, string filePath)
+        public Task Export<T>(List<T> data, string filePath)
         {
-            MiniExcel.SaveAs(filePath, data, true, "数据", overwriteFile: true);
+            return MiniExcel.SaveAsAsync(filePath, data, true, "数据", overwriteFile: true);
         }
     }
 }

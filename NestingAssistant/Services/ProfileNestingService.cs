@@ -8,11 +8,14 @@ namespace NestingAssistant.Services
 {
     public class ProfileNestingService
     {
-        private readonly IExcelService _excel;
+        public IExcelService Excel { get; private set; }
 
-        public ProfileNestingService(IExcelService excel)
+        public IStorageService Storage { get; private set; }
+
+        public ProfileNestingService(IExcelService excel, IStorageService storage)
         {
-            _excel = excel;
+            Excel = excel;
+            Storage = storage;
         }
     }
 }

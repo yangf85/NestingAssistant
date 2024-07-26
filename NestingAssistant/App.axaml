@@ -13,5 +13,10 @@
 	</Application.Styles>
 	<Application.Resources>
 		<FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
+		<DropShadowEffect
+            x:Key="WindowEffect"
+            BlurRadius="10"
+            Opacity="0.5"
+            Color="Black" />
 	</Application.Resources>
 </Application>
