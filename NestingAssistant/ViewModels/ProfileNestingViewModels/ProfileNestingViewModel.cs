@@ -134,5 +134,11 @@ namespace NestingAssistant.ViewModels
                 ProfileMaterials.Add(Mapper.Map<ProfileMaterialViewModel>(item));
             }
         }
+
+        [RelayCommand]
+        private async Task Run()
+        {
+            await Task.Delay(3000);
+        }
     }
 }

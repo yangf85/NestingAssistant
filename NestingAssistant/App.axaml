@@ -14,10 +14,11 @@
 	<Application.Resources>
 		<FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
 	</Application.Resources>
-	<TrayIcon.Icons>
+	<!--<TrayIcon.Icons>
 		<TrayIcons>
 			<TrayIcon Icon="/Assets/avalonia-logo.ico" ToolTipText="NestingAssistant">
-				<!--<TrayIcon.Menu>
+				-->
+	<!--<TrayIcon.Menu>
 					<NativeMenu>
 						<NativeMenuItem Header="Settings">
 							<NativeMenu>
@@ -29,7 +30,8 @@
 						</NativeMenuItem>
 					</NativeMenu>
 				</TrayIcon.Menu>-->
+	<!--
 			</TrayIcon>
 		</TrayIcons>
-	</TrayIcon.Icons>
+	</TrayIcon.Icons>-->
 </Application>

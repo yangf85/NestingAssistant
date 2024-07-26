@@ -15,7 +15,9 @@
 	</Design.DataContext>
 	<TabControl>
 		<TabItem Header="零件数据设置">
-			<Grid Grid.Row="0" RowDefinitions="*,Auto">
+			<Grid
+                Grid.Row="0"
+                RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -60,7 +62,9 @@
 			</Grid>
 		</TabItem>
 		<TabItem Header="原材料数据设置">
-			<Grid Grid.Row="0" RowDefinitions="*,Auto">
+			<Grid
+                Grid.Row="0"
+                RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -100,17 +104,46 @@
 			</Grid>
 		</TabItem>
 		<TabItem Header="优化设置">
-			<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto,*">
-				<UniformGrid Grid.Row="0" Rows="1">
-					<u:NumericDoubleUpDown />
-					<u:NumericIntUpDown />
-					<u:TimePicker />
-				</UniformGrid>
-				<UniformGrid Grid.Row="1" Rows="1">
-					<Button Content="查看结果" />
-					<Button Content="导出结果" />
-				</UniformGrid>
-			</Grid>
+			<u:LoadingContainer
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                IsLoading="{Binding RunCommand.IsRunning}"
+                LoadingMessage="优化进行中,请稍后...">
+				<u:LoadingContainer.Indicator>
+					<u:LoadingIcon Classes="Large" />
+				</u:LoadingContainer.Indicator>
+				<Grid RowDefinitions="*,Auto">
+					<u:Form
+                        Grid.Row="0"
+                        HorizontalAlignment="Stretch"
+                        LabelAlignment="Left"
+                        LabelPosition="Left">
+						<u:FormGroup Header="切割设置">
+							<u:NumericDoubleUpDown u:FormItem.Label="切割缝隙" />
+							<u:NumericIntUpDown u:FormItem.Label="最大段数" />
+						</u:FormGroup>
+						<u:FormGroup Header="优化设置">
+							<u:NumericIntUpDown u:FormItem.Label="迭代次数" />
+							<u:NumericIntUpDown u:FormItem.Label="种群大小" />
+							<u:NumericDoubleUpDown u:FormItem.Label="变异率" />
+						</u:FormGroup>
+					</u:Form>
+
+					<UniformGrid
+                        Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        Rows="1">
+						<Button
+                            Name="RunButton"
+                            Command="{Binding RunCommand}"
+                            Content="运行" />
+						<Button
+                            Margin="10"
+                            Content="查看" />
+						<Button Content="导出" />
+					</UniformGrid>
+				</Grid>
+			</u:LoadingContainer>
 		</TabItem>
 	</TabControl>
 </UserControl>
