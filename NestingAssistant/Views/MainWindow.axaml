@@ -1,4 +1,4 @@
-<u:UrsaWindow
+<Window
     x:Class="NestingAssistant.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,29 +10,20 @@
     Title="NestingAssistant"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Background="Transparent"
+    ExtendClientAreaToDecorationsHint="True"
+    TransparencyLevelHint="AcrylicBlur"
     mc:Ignorable="d">
-	<u:UrsaWindow.Effect>
-		<DropShadowEffect
-            BlurRadius="3"
-            Opacity="0.5"
-            Color="Black" />
-	</u:UrsaWindow.Effect>
-
-	<u:UrsaWindow.RightContent>
-		<u:ThemeToggleButton IsThreeState="True" Mode="Controller" />
-	</u:UrsaWindow.RightContent>
-	<u:UrsaWindow.LeftContent>
-		<StackPanel Margin="5,0,0,0" Orientation="Horizontal">
-			<Image
-                Width="25"
-                Height="25"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Source="/Assets/avalonia-logo.ico"
-                UseLayoutRounding="True" />
-			<TextBlock VerticalAlignment="Center" Text="NestingAssistant" />
-		</StackPanel>
-	</u:UrsaWindow.LeftContent>
-
-	<views:ProfileNestingView Margin="0,30,0,0" />
-</u:UrsaWindow>
+	<Panel>
+		<ExperimentalAcrylicBorder IsHitTestVisible="False">
+			<ExperimentalAcrylicBorder.Material>
+				<ExperimentalAcrylicMaterial
+                    BackgroundSource="None"
+                    MaterialOpacity="0.8"
+                    TintColor="LightGray"
+                    TintOpacity="0.1" />
+			</ExperimentalAcrylicBorder.Material>
+		</ExperimentalAcrylicBorder>
+		<views:ProfileNestingView Margin="0,30,0,0" />
+	</Panel>
+</Window>

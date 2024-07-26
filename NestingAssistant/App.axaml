@@ -13,10 +13,23 @@
 	</Application.Styles>
 	<Application.Resources>
 		<FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
-		<DropShadowEffect
-            x:Key="WindowEffect"
-            BlurRadius="10"
-            Opacity="0.5"
-            Color="Black" />
 	</Application.Resources>
+	<TrayIcon.Icons>
+		<TrayIcons>
+			<TrayIcon Icon="/Assets/avalonia-logo.ico" ToolTipText="NestingAssistant">
+				<!--<TrayIcon.Menu>
+					<NativeMenu>
+						<NativeMenuItem Header="Settings">
+							<NativeMenu>
+								<NativeMenuItem Header="Option 1" />
+								<NativeMenuItem Header="Option 2" />
+								<NativeMenuItemSeparator />
+								<NativeMenuItem Header="Option 3" />
+							</NativeMenu>
+						</NativeMenuItem>
+					</NativeMenu>
+				</TrayIcon.Menu>-->
+			</TrayIcon>
+		</TrayIcons>
+	</TrayIcon.Icons>
 </Application>

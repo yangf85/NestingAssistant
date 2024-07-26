@@ -33,9 +33,14 @@ public partial class App : Application
             {
                 DataContext = new MainViewModel()
             };
-
             Ioc.Default.ConfigureServices(ConfigureServices(desktop));
+
+            desktop.Exit += Desktop_Exit;
         }
+    }
+
+    private void Desktop_Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
+    {
     }
 
     private IServiceProvider ConfigureServices(IClassicDesktopStyleApplicationLifetime lifetime)
