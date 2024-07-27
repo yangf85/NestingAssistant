@@ -123,25 +123,26 @@
                         LabelWidth="*">
 						<u:FormGroup Header="切割设置">
 							<u:NumericDoubleUpDown
-                                u:FormItem.Label="切割缝隙"
+                                u:FormItem.Label="切割缝隙:"
                                 Minimum="0"
                                 Value="{Binding Spacing}" />
 							<u:NumericIntUpDown
-                                u:FormItem.Label="最大段数"
+                                u:FormItem.Label="最大段数:"
                                 Minimum="0"
                                 Value="{Binding MaxSegments}" />
 						</u:FormGroup>
 						<u:FormGroup Header="优化设置">
 							<u:NumericIntUpDown
-                                u:FormItem.Label="迭代次数"
+                                u:FormItem.Label="迭代次数:"
                                 Minimum="0"
                                 Value="{Binding Generations}" />
 							<u:NumericIntUpDown
-                                u:FormItem.Label="种群大小"
+                                u:FormItem.Label="种群大小:"
                                 Minimum="0"
                                 Value="{Binding PopulationSize}" />
 							<u:NumericDoubleUpDown
-                                u:FormItem.Label="变异率"
+                                u:FormItem.Label="变异率:"
+                                Maximum="1"
                                 Minimum="0.01"
                                 Value="{Binding MutationRate}" />
 						</u:FormGroup>

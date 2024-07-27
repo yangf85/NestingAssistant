@@ -10,34 +10,24 @@ namespace NestingAssistant.ViewModels
 {
     public partial class ProfileNestingOptionViewModel : ObservableValidator
     {
+        [ObservableProperty]
+        [Range(0, 9999)]
         private double _spacing = 5d;
 
-        [Range(0, 9999)]
         [ObservableProperty]
+        [Range(0, 9999)]
         private int _maxSegments = 10;
 
-        [Range(0, 9999)]
         [ObservableProperty]
+        [Range(0, 9999)]
         private int _populationSize = 50;
 
-        [Range(0, 9999)]
         [ObservableProperty]
+        [Range(0, 9999)]
         private int _generations = 100;
 
+        [ObservableProperty]
         [Range(0, 1)]
-        [ObservableProperty]
         private double _mutationRate = 0.1;
-
-        [Required]
-        [MinLength(10)]
-        [ObservableProperty]
-        private string _name = "";
-
-        [Range(0, 9999)]
-        public double Spacing
-        {
-            get => _spacing;
-            set => SetProperty(ref _spacing, value, true);
-        }
     }
 }

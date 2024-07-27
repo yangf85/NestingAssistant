@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -258,14 +259,49 @@ public class PlacedProfileMaterial : IEquatable<PlacedProfileMaterial>, ICompara
     }
 }
 
+public class ProfileMaterialSummary
+{
+    public string Category { get; set; }
+
+    public double Length { get; set; }
+
+    public int Piece { get; set; }
+
+    public double ToltalLength { get; set; }
+
+    public double Utilization => ToltalLength == 0 ? 0 : (ToltalLength - RemainLength) / ToltalLength;
+
+    public double RemainLength { get; set; }
+}
+
 public class ProfileNestingResult
 {
-    public List<PlacedProfileMaterial> PlacedProfileMaterials { get; set; } = new();
+    public List<PlacedProfileMaterial> Materials { get; set; }
+
+    public List<ProfileMaterialSummary> SummaryStatistics { get; set; }
 }
 
 public class ProfileNester
 {
     private readonly Random _random = new Random();
+
+    public ProfileNestingResult SummaryStatistics(List<PlacedProfileMaterial> materials)
+    {
+        var result = new ProfileNestingResult();
+        result.Materials = materials;
+
+        result.SummaryStatistics = materials.GroupBy(m => (m.Category, m.Length))
+            .Select(g => new ProfileMaterialSummary
+            {
+                Category = g.Key.Category,
+                Length = g.Key.Length,
+                Piece = g.Sum(i => i.Piece),
+                ToltalLength = g.Sum(i => i.Length * i.Piece),
+                RemainLength = g.Sum(i => i.RemainLength * i.Piece),
+            }).ToList();
+
+        return result;
+    }
 
     public List<PlacedProfileMaterial> Nest(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
     {
