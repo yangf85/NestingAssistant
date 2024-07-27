@@ -15,9 +15,7 @@
 	</Design.DataContext>
 	<TabControl>
 		<TabItem Header="零件数据设置">
-			<Grid
-                Grid.Row="0"
-                RowDefinitions="*,Auto">
+			<Grid Grid.Row="0" RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -62,9 +60,7 @@
 			</Grid>
 		</TabItem>
 		<TabItem Header="原材料数据设置">
-			<Grid
-                Grid.Row="0"
-                RowDefinitions="*,Auto">
+			<Grid Grid.Row="0" RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -110,22 +106,44 @@
                 IsLoading="{Binding RunCommand.IsRunning}"
                 LoadingMessage="优化进行中,请稍后...">
 				<u:LoadingContainer.Indicator>
-					<u:LoadingIcon Classes="Large" />
+					<Viewbox
+                        Width="120"
+                        Height="120"
+                        Stretch="Uniform">
+						<u:LoadingIcon Classes="Large" />
+					</Viewbox>
 				</u:LoadingContainer.Indicator>
 				<Grid RowDefinitions="*,Auto">
 					<u:Form
                         Grid.Row="0"
                         HorizontalAlignment="Stretch"
+                        DataContext="{Binding Option}"
                         LabelAlignment="Left"
-                        LabelPosition="Left">
+                        LabelPosition="Left"
+                        LabelWidth="*">
 						<u:FormGroup Header="切割设置">
-							<u:NumericDoubleUpDown u:FormItem.Label="切割缝隙" />
-							<u:NumericIntUpDown u:FormItem.Label="最大段数" />
+							<u:NumericDoubleUpDown
+                                u:FormItem.Label="切割缝隙"
+                                Minimum="0"
+                                Value="{Binding Spacing}" />
+							<u:NumericIntUpDown
+                                u:FormItem.Label="最大段数"
+                                Minimum="0"
+                                Value="{Binding MaxSegments}" />
 						</u:FormGroup>
 						<u:FormGroup Header="优化设置">
-							<u:NumericIntUpDown u:FormItem.Label="迭代次数" />
-							<u:NumericIntUpDown u:FormItem.Label="种群大小" />
-							<u:NumericDoubleUpDown u:FormItem.Label="变异率" />
+							<u:NumericIntUpDown
+                                u:FormItem.Label="迭代次数"
+                                Minimum="0"
+                                Value="{Binding Generations}" />
+							<u:NumericIntUpDown
+                                u:FormItem.Label="种群大小"
+                                Minimum="0"
+                                Value="{Binding PopulationSize}" />
+							<u:NumericDoubleUpDown
+                                u:FormItem.Label="变异率"
+                                Minimum="0.01"
+                                Value="{Binding MutationRate}" />
 						</u:FormGroup>
 					</u:Form>
 
@@ -137,9 +155,7 @@
                             Name="RunButton"
                             Command="{Binding RunCommand}"
                             Content="运行" />
-						<Button
-                            Margin="10"
-                            Content="查看" />
+						<Button Margin="10" Content="查看" />
 						<Button Content="导出" />
 					</UniformGrid>
 				</Grid>

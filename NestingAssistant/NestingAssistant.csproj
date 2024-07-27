@@ -30,4 +30,12 @@
     <PackageReference Include="Semi.Avalonia" Version="11.1.0" />
     <PackageReference Include="Semi.Avalonia.DataGrid" Version="11.1.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\FormGroupControlTheme.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProfileOptimizer\ProfileOptimizer.csproj" />
+  </ItemGroup>
 </Project>

@@ -7,8 +7,7 @@ List<ProfileMaterial> materials = new List<ProfileMaterial>
         {
             new ProfileMaterial("A", 5, 1050),
             new ProfileMaterial("A", 10, 800),
-            new ProfileMaterial("B", 8, 1200) 
-           
+            new ProfileMaterial("B", 8, 1200)
         };
 
 // 型材零件
@@ -23,7 +22,7 @@ List<ProfilePart> parts = new List<ProfilePart>
         };
 
 // NestingOption 设置
-NestingOption option = new NestingOption
+ProfileNestingOption option = new ProfileNestingOption
 {
     Spacing = 20,
     MaxSegments = 3,
@@ -34,7 +33,7 @@ NestingOption option = new NestingOption
 
 // 创建 ProfileNester 实例并执行 Nest 方法
 ProfileNester nester = new ProfileNester();
-List<ProfileNestingResult> results = nester.Nest(materials, parts, option);
+List<PlacedProfileMaterial> results = nester.Nest(materials, parts, option);
 
 // 输出结果
 foreach (var result in results)

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NestingAssistant.Models;
+using NestingAssistant.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +18,11 @@ namespace NestingAssistant.Services
         {
             Excel = excel;
             Storage = storage;
+        }
+
+        public Task<IEnumerable<ProfileNestingResultViewModel>> Run(IEnumerable<ProfilePartViewModel> parts, IEnumerable<ProfileMaterialViewModel> materials, ProfileNestingOptionViewModel option)
+        {
+            return null;
         }
     }
 }

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using MapsterMapper;
 using NestingAssistant.Models;
 using NestingAssistant.Services;
+using ProfileOptimizer.Nesting;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +20,8 @@ namespace NestingAssistant.ViewModels
     public partial class ProfileNestingViewModel : BasicViewModel
     {
         private ProfileNestingService _service;
+
+        public ProfileNestingOptionViewModel Option { get; set; } = new();
 
         public ObservableCollection<ProfilePartViewModel> ProfileParts { get; private set; } = new();
 
@@ -138,7 +141,7 @@ namespace NestingAssistant.ViewModels
         [RelayCommand]
         private async Task Run()
         {
-            await Task.Delay(3000);
+            await _service.Run(ProfileParts, ProfileMaterials, Option);
         }
     }
 }
