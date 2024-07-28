@@ -25,6 +25,7 @@
 		</ControlTheme>
 		<!--<ResourceInclude Source="avares://NestingAssistant/Styles/FormGroupControlTheme.axaml" />-->
 		<FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
+		<FontWeight x:Key="ToggleButtonDefaultFontWeight">500</FontWeight>
 	</Application.Resources>
 	<!--<TrayIcon.Icons>
 		<TrayIcons>

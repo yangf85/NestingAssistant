@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ProfileOptimizer.Nesting;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,24 +11,8 @@ namespace NestingAssistant.ViewModels
 {
     public partial class ProfileNestingResultViewModel : ObservableValidator
     {
-        [ObservableProperty]
-        private double _remainLength;
+        public ObservableCollection<UsageProfileMaterialViewModel> Materials { get; set; } = [];
 
-        [ObservableProperty]
-        private double _utilization;
-
-        [ObservableProperty]
-        private string _category;
-
-        [ObservableProperty]
-        private int _piece;
-
-        [ObservableProperty]
-        private double _length;
-
-        [ObservableProperty]
-        private double _spacing;
-
-        public ObservableCollection<PlacedProfilePartViewModel> Parts { get; set; } = new();
+        public ObservableCollection<ProfileNestingSummaryViewModel> Summaries { get; set; } = [];
     }
 }

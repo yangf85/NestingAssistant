@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,15 @@ namespace NestingAssistant.ViewModels
 {
     public partial class ProfileMaterialViewModel : ObservableValidator
     {
+        [Required]
         [ObservableProperty]
-        private string _category;
+        private string _type;
 
+        [Range(1, 99999)]
         [ObservableProperty]
         private int _piece;
 
+        [Range(1, 99999)]
         [ObservableProperty]
         private double _length;
     }

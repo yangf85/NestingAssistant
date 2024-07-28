@@ -1,5 +1,7 @@
 ﻿using MiniExcelLibs;
+using MiniExcelLibs.OpenXml;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +18,34 @@ namespace NestingAssistant.Services
 
         public Task Export<T>(List<T> data, string filePath)
         {
-            return MiniExcel.SaveAsAsync(filePath, data, true, "数据", overwriteFile: true);
+            var config = new OpenXmlConfiguration()
+            {
+                //TableStyles = TableStyles.None,
+                AutoFilter = false,
+            };
+            return MiniExcel.SaveAsAsync(filePath, data, true, "数据", overwriteFile: true, configuration: config);
+        }
+
+        public Task ExportMultipleSheets(Dictionary<string, object> sheets, string filePath)
+        {
+            var config = new OpenXmlConfiguration()
+            {
+                //TableStyles = TableStyles.None,
+                AutoFilter = false,
+            };
+            return MiniExcel.SaveAsAsync(filePath, sheets, true, overwriteFile: true, configuration: config);
+        }
+
+        public async Task<Dictionary<string, IEnumerable>> ImportMultipleSheets(string filePath, params string[] sheetNames)
+        {
+            var dictionary = new Dictionary<string, IEnumerable>();
+
+            foreach (var sheetName in sheetNames)
+            {
+                dictionary[sheetName] = await MiniExcel.QueryAsync<object>(filePath, sheetName: sheetName);
+            }
+
+            return dictionary;
         }
     }
 }

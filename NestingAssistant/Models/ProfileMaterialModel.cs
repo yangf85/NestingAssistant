@@ -11,7 +11,7 @@ namespace NestingAssistant.Models
     public class ProfileMaterialModel
     {
         [ExcelColumn(Name = "类型", Index = 0)]
-        public string Category { get; set; }
+        public string Type { get; set; }
 
         [ExcelColumn(Name = "件数", Index = 2)]
         public int Piece { get; set; }

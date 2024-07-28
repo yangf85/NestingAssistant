@@ -10,7 +10,7 @@ namespace NestingAssistant.Models
     public class ProfilePartModel
     {
         [ExcelColumn(Name = "类型", Index = 0)]
-        public string Category { get; set; }
+        public string Type { get; set; }
 
         [ExcelColumn(Name = "长度", Index = 1)]
         public double Length { get; set; }

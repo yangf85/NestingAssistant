@@ -7,6 +7,7 @@ using NestingAssistant.Models;
 using NestingAssistant.Services;
 using ProfileOptimizer.Nesting;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -23,15 +24,35 @@ namespace NestingAssistant.ViewModels
 
         public ProfileNestingOptionViewModel Option { get; set; } = new();
 
-        public ObservableCollection<ProfilePartViewModel> ProfileParts { get; private set; } = new();
+        public ObservableCollection<ProfilePartViewModel> ProfileParts { get; private set; } = [];
 
-        public ObservableCollection<ProfileMaterialViewModel> ProfileMaterials { get; private set; } = new();
+        public ObservableCollection<ProfileMaterialViewModel> ProfileMaterials { get; private set; } = [];
+
+        public ProfileNestingResultViewModel NestingResult { get; set; } = new();
 
         public ProfileNestingViewModel(IMessageBoxService messageBox, INotificationService notification, IMapper mapper, ProfileNestingService service)
  : base(messageBox, notification, mapper)
         {
             _service = service;
-            ProfileParts = new ObservableCollection<ProfilePartViewModel>();
+
+            NestingResult.Materials.Add(new UsageProfileMaterialViewModel()
+            {
+                Type = "A",
+                Length = 2500,
+                Piece = 5,
+                Utilization = 0.85,
+
+                Parts = new ObservableCollection<UsageProfilePartViewModel>()
+                {
+                   new UsageProfilePartViewModel()
+                   {
+                       Type="A",
+                       Length=1000,
+                       Piece=2,
+                       Label="aa-01",
+                   }
+                }
+            });
         }
 
         [RelayCommand]
@@ -141,7 +162,36 @@ namespace NestingAssistant.ViewModels
         [RelayCommand]
         private async Task Run()
         {
-            await _service.Run(ProfileParts, ProfileMaterials, Option);
+            await Task.Delay(5000);
+            //await _service.Run(ProfileParts, ProfileMaterials, Option);
+        }
+
+        [RelayCommand]
+        private async Task ExportNestingResult()
+        {
+            var option = new FilePickerSaveOptions()
+            {
+                DefaultExtension = "xlsx",
+                ShowOverwritePrompt = true,
+                Title = "保存套裁数据",
+                SuggestedFileName = "ProfileNestingResult",
+                FileTypeChoices = [new FilePickerFileType("Excel Files") { Patterns = ["*.xlsx"] }]
+            };
+
+            var file = await _service.Storage.SaveFileAsync(option);
+            if (file == null)
+            {
+                return;
+            }
+
+            var filepath = file.TryGetLocalPath();
+
+            var dict = new Dictionary<string, object>();
+
+            dict["数据汇总"] = NestingResult.Summaries.Select(i => Mapper.Map<ProfileNestingSummaryModel>(i));
+            dict["排版汇总"] = NestingResult.Materials.Select(i => Mapper.Map<UsageProfileMaterialModel>(i));
+
+            await _service.Excel.ExportMultipleSheets(dict, filepath);
         }
     }
 }
