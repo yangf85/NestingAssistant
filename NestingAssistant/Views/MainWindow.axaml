@@ -13,6 +13,21 @@
     ExtendClientAreaChromeHints="SystemChrome"
     SystemDecorations="BorderOnly"
     mc:Ignorable="d">
+	<u:UrsaWindow.LeftContent>
+		<StackPanel Margin="5,0" Orientation="Horizontal">
+			<Image
+                Width="25"
+                Height="25"
+                Source="/Assets/Logo.png" />
+			<TextBlock
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                Text="Cyclone套裁助手" />
+		</StackPanel>
+	</u:UrsaWindow.LeftContent>
+	<u:UrsaWindow.RightContent>
+		<u:ThemeToggleButton IsThreeState="True" Mode="Controller" />
+	</u:UrsaWindow.RightContent>
 	<Panel>
 		<views:ProfileNestingView Margin="0,30,0,0" />
 	</Panel>
