@@ -49,6 +49,7 @@ public class ProfileMaterial
 
 public class UsageProfilePart
 {
+    public bool IsUsage { get; set; }
     public string Type { get; set; }
 
     public string Label { get; set; }
@@ -60,6 +61,7 @@ public class UsageProfilePart
 
 public class UsageProfileMaterial
 {
+    public bool IsUsage { get; set; }
     public string Type { get; set; }
 
     public int Piece { get; set; }

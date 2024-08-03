@@ -13,7 +13,9 @@
 		<StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
 	</Application.Styles>
 	<Application.Resources>
-		<ControlTheme x:Key="HorizontalFormGroup" TargetType="u:FormGroup">
+		<ControlTheme
+            x:Key="HorizontalFormGroup"
+            TargetType="u:FormGroup">
 			<Setter Property="Foreground" Value="Green" />
 			<Setter Property="ItemsPanel">
 				<Setter.Value>
@@ -25,6 +27,13 @@
 		</ControlTheme>
 		<!--<ResourceInclude Source="avares://NestingAssistant/Styles/FormGroupControlTheme.axaml" />-->
 		<FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
+		<FontWeight x:Key="CalendarItemCalendarButtonSelectedFontWeight">500</FontWeight>
+		<FontWeight x:Key="ExpanderHeaderFontWeight">500</FontWeight>
+		<FontWeight x:Key="ListBoxItemRadioGroupButtonFontWeight">500</FontWeight>
+		<FontWeight x:Key="ProgressBarTextFontWeight">500</FontWeight>
+		<FontWeight x:Key="RadioButtonButtonFontWeight">500</FontWeight>
+		<FontWeight x:Key="TabItemSelectedFontWeight">500</FontWeight>
+		<FontWeight x:Key="TextBlockTitleFontWeight">500</FontWeight>
 		<FontWeight x:Key="ToggleButtonDefaultFontWeight">500</FontWeight>
 	</Application.Resources>
 	<!--<TrayIcon.Icons>
