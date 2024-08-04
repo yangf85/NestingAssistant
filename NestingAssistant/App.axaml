@@ -13,9 +13,7 @@
 		<StyleInclude Source="avares://Semi.Avalonia.DataGrid/Index.axaml" />
 	</Application.Styles>
 	<Application.Resources>
-		<ControlTheme
-            x:Key="HorizontalFormGroup"
-            TargetType="u:FormGroup">
+		<ControlTheme x:Key="HorizontalFormGroup" TargetType="u:FormGroup">
 			<Setter Property="Foreground" Value="Green" />
 			<Setter Property="ItemsPanel">
 				<Setter.Value>
@@ -35,6 +33,12 @@
 		<FontWeight x:Key="TabItemSelectedFontWeight">500</FontWeight>
 		<FontWeight x:Key="TextBlockTitleFontWeight">500</FontWeight>
 		<FontWeight x:Key="ToggleButtonDefaultFontWeight">500</FontWeight>
+
+		<CornerRadius x:Key="ButtonCornerRadius">0</CornerRadius>
+		<CornerRadius x:Key="ToggleButtonCornerRadius">0</CornerRadius>
+		<CornerRadius x:Key="TextBoxCornerRadius">0</CornerRadius>
+		<CornerRadius x:Key="NumericUpDownCornerRadius">0</CornerRadius>
+		<CornerRadius x:Key="ComboBoxSelectorCornerRadius">0</CornerRadius>
 	</Application.Resources>
 	<!--<TrayIcon.Icons>
 		<TrayIcons>
