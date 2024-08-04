@@ -10,18 +10,41 @@ namespace ProfileOptimizer.Nesting;
 
 public class ProfileNestingChromosome : ChromosomeBase
 {
-    public ProfileNestingChromosome(int numberOfParts) : base(numberOfParts)
+    private readonly List<ProfilePart> _parts;
+    private readonly List<ProfileMaterial> _materials;
+    private readonly ProfileNestingOption _option;
+
+    public ProfileMaterial Material { get; private set; }
+
+    public ProfileNestingChromosome(List<ProfilePart> parts, List<ProfileMaterial> materials, ProfileNestingOption option) : base(option.MaxSegments)
     {
-        // Create genes with random sequence of parts
-        for (int i = 0; i < numberOfParts; i++)
+        _parts = parts;
+        _materials = materials;
+        _option = option;
+
+        if (materials.Count > 0)
         {
-            ReplaceGene(i, new Gene(i));
+            Material = materials[GeneticSharp.RandomizationProvider.Current.GetInt(0, materials.Count)];
+
+            for (int i = 0; i < option.MaxSegments; i++)
+            {
+                var index = GeneticSharp.RandomizationProvider.Current.GetInt(0, parts.Count);
+                var part = new ProfilePart()
+                {
+                    Label = parts[index].Label,
+                    Length = parts[index].Length,
+                    Type = parts[index].Type,
+                    Piece = 1,
+                };
+                Material.Parts.Add(part);
+                ReplaceGene(i, new Gene(part));
+            }
         }
     }
 
     public override IChromosome CreateNew()
     {
-        return new ProfileNestingChromosome(Length);
+        return new ProfileNestingChromosome(_parts, _materials, _option);
     }
 
     public override Gene GenerateGene(int geneIndex)
@@ -33,10 +56,5 @@ public class ProfileNestingChromosome : ChromosomeBase
     {
         var clone = base.Clone() as ProfileNestingChromosome;
         return clone;
-    }
-
-    public int[] GetPartSequence()
-    {
-        return GetGenes().Select(g => (int)g.Value).ToArray();
     }
 }

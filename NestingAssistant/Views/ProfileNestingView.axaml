@@ -31,7 +31,9 @@
 	<UserControl.Resources />
 	<TabControl>
 		<TabItem Header="零件数据设置">
-			<Grid Grid.Row="0" RowDefinitions="*,Auto">
+			<Grid
+                Grid.Row="0"
+                RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -64,7 +66,9 @@
                         Command="{Binding ImportBasicDataCommand}"
                         CommandParameter="Part"
                         Content="导入零件数据(Excel)" />
-					<Button Content="从剪切板复制零件数据" IsEnabled="False" />
+					<Button
+                        Content="从剪切板复制零件数据"
+                        IsEnabled="False" />
 					<Button
                         Command="{Binding ExportTemplateCommand}"
                         CommandParameter="Part"
@@ -74,7 +78,9 @@
 			</Grid>
 		</TabItem>
 		<TabItem Header="原材料数据设置">
-			<Grid Grid.Row="0" RowDefinitions="*,Auto">
+			<Grid
+                Grid.Row="0"
+                RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -103,7 +109,9 @@
                         Command="{Binding ImportBasicDataCommand}"
                         CommandParameter="Material"
                         Content="导入原材料数据(Excel)" />
-					<Button Content="从剪切板复制原材料数据" IsEnabled="False" />
+					<Button
+                        Content="从剪切板复制原材料数据"
+                        IsEnabled="False" />
 					<Button
                         Command="{Binding ExportTemplateCommand}"
                         CommandParameter="Material"
@@ -119,7 +127,9 @@
                 OpenPaneLength="600">
 				<SplitView.Pane>
 					<Grid RowDefinitions="Auto,*">
-						<StackPanel Grid.Row="0" Orientation="Vertical">
+						<StackPanel
+                            Grid.Row="0"
+                            Orientation="Vertical">
 							<u:Divider HorizontalContentAlignment="Left">
 								<TextBlock
                                     FontSize="16"
@@ -127,7 +137,9 @@
                                     Text="数据汇总" />
 							</u:Divider>
 
-							<DataGrid IsReadOnly="True" ItemsSource="{Binding NestingResult.Summaries}">
+							<DataGrid
+                                IsReadOnly="True"
+                                ItemsSource="{Binding NestingResult.Summaries}">
 								<DataGrid.Columns>
 									<DataGridTextColumn
                                         Width="6*"
@@ -160,14 +172,18 @@
                             Grid.Row="1"
                             Margin="0,10,0,0"
                             Orientation="Vertical">
-							<StackPanel Grid.Row="0" Orientation="Vertical">
+							<StackPanel
+                                Grid.Row="0"
+                                Orientation="Vertical">
 								<u:Divider HorizontalContentAlignment="Left">
 									<TextBlock
                                         FontSize="16"
                                         FontWeight="Medium"
                                         Text="排版汇总" />
 								</u:Divider>
-								<DataGrid IsReadOnly="True" ItemsSource="{Binding NestingResult.Materials}">
+								<DataGrid
+                                    IsReadOnly="True"
+                                    ItemsSource="{Binding NestingResult.Materials}">
 									<DataGrid.Columns>
 										<DataGridTextColumn
                                             Width="6*"
@@ -227,7 +243,7 @@
                                     Minimum="0"
                                     Value="{Binding MaxSegments}" />
 							</u:FormGroup>
-							<u:FormGroup Header="优化设置">
+							<!--<u:FormGroup Header="优化设置">
 								<u:NumericIntUpDown
                                     u:FormItem.Label="迭代次数:"
                                     Minimum="0"
@@ -241,7 +257,7 @@
                                     Maximum="1"
                                     Minimum="0.01"
                                     Value="{Binding MutationRate}" />
-							</u:FormGroup>
+							</u:FormGroup>-->
 						</u:Form>
 
 						<UniformGrid
@@ -256,7 +272,9 @@
                                 x:Name="DisplayToggleButton"
                                 Margin="10"
                                 Content="查看" />
-							<Button Command="{Binding ExportNestingResultCommand}" Content="导出" />
+							<Button
+                                Command="{Binding ExportNestingResultCommand}"
+                                Content="导出" />
 						</UniformGrid>
 					</Grid>
 				</u:LoadingContainer>
