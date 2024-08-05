@@ -1,36 +1,33 @@
-﻿using System;
+﻿using GeneticSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GeneticSharp;
 
-namespace ProfileOptimizer.Nesting;
-
-public class ProfileNestingFitness : IFitness
+namespace ProfileOptimizer.Nesting
 {
-    public double Evaluate(IChromosome chromosome)
+    public class ProfileNestingFitness : IFitness
     {
-        if (chromosome is not ProfileNestingChromosome nesting || nesting.Material is null)
+        public double Evaluate(IChromosome chromosome)
         {
-            return 0;
+            if (chromosome is not ProfileNestingChromosome nestingChromosome)
+            {
+                return -double.MaxValue;
+            }
+
+            if (nestingChromosome.NestingResult is null)
+            {
+                return -double.MaxValue;
+            }
+
+            var waste = nestingChromosome.NestingResult.Material.Length - nestingChromosome.NestingResult.Parts.Sum(i => i.Length);
+            if (waste < 0)
+            {
+                return -double.MaxValue;
+            }
+
+            return -waste;
         }
-
-        var utilization = nesting.Material.Utilization;
-        if (utilization < 0 || utilization > 1)
-        {
-            return 0;
-        }
-
-        //var wasteLength = nesting.Material.Length - nesting.Material.Parts.Sum(i => i.Length);
-
-        //if (wasteLength < 0)
-        //{
-        //    return 0; // 确保浪费长度不为负
-        //}
-
-        //var fitness = utilization * nesting.Material.Parts.Count - wasteLength * 0.1;
-
-        return utilization;
     }
 }
