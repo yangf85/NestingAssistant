@@ -6,9 +6,21 @@ using System.Threading.Tasks;
 
 namespace ProfileOptimizer.Nesting;
 
-public class ProfilePart
+public struct ProfilePart
 {
-    public double Length { get; set; } = 2000;
+    public string Type { get; set; }
 
-    public int Piece { get; set; } = 5;
+    public string Label { get; set; }
+
+    public double Length { get; set; }
+
+    public int Piece { get; set; }
+
+    public ProfilePart()
+    {
+        Type = "Profile";
+        Label = "Profile-2000";
+        Length = 2000;
+        Piece = 5;
+    }
 }

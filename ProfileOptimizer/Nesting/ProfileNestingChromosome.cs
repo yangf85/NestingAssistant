@@ -9,10 +9,19 @@ namespace ProfileOptimizer.Nesting
 {
     public class ProfileNestingChromosome : ChromosomeBase
     {
-        public ProfileNestingResult NestingResult { get; private set; }
+        private List<ProfileMaterial> _materials;
 
-        public ProfileNestingChromosome(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option) : base(option.MaxSegments)
+        private List<ProfilePart> _parts;
+
+        private ProfileNestingOption _option;
+
+        public List<ProfileNestingResult> Results { get; private set; }
+
+        public ProfileNestingChromosome(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option) : base(parts.Sum(i => i.Piece))
         {
+            _materials = materials;
+            _parts = parts;
+            _option = option;
         }
 
         public override IChromosome CreateNew()

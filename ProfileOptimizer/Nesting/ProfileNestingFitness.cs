@@ -11,23 +11,24 @@ namespace ProfileOptimizer.Nesting
     {
         public double Evaluate(IChromosome chromosome)
         {
-            if (chromosome is not ProfileNestingChromosome nestingChromosome)
-            {
-                return -double.MaxValue;
-            }
+            //if (chromosome is not ProfileNestingChromosome nestingChromosome)
+            //{
+            //    return -double.MaxValue;
+            //}
 
-            if (nestingChromosome.NestingResult is null)
-            {
-                return -double.MaxValue;
-            }
+            //if (nestingChromosome.NestingResult is null)
+            //{
+            //    return -double.MaxValue;
+            //}
 
-            var waste = nestingChromosome.NestingResult.Material.Length - nestingChromosome.NestingResult.Parts.Sum(i => i.Length);
-            if (waste < 0)
-            {
-                return -double.MaxValue;
-            }
+            //var waste = nestingChromosome.NestingResult.Material.Length - nestingChromosome.NestingResult.Parts.Sum(i => i.Length);
+            //if (waste < 0)
+            //{
+            //    return -double.MaxValue;
+            //}
 
-            return -waste;
+            //return -waste;
+            return 0;
         }
     }
 }
