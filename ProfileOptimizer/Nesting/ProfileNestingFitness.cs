@@ -9,6 +9,17 @@ namespace ProfileOptimizer.Nesting
 {
     public class ProfileNestingFitness : IFitness
     {
+        private List<ProfileMaterial> _materials;
+        private List<ProfilePart> _parts;
+        private ProfileNestingOption _option;
+
+        public ProfileNestingFitness(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
+        {
+            _materials = materials;
+            _parts = parts;
+            _option = option;
+        }
+
         public double Evaluate(IChromosome chromosome)
         {
             //if (chromosome is not ProfileNestingChromosome nestingChromosome)

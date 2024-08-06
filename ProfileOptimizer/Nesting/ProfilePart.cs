@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProfileOptimizer.Nesting;
 
-public struct ProfilePart
+public class ProfilePart
 {
     public string Type { get; set; }
 
