@@ -8,8 +8,17 @@ namespace ProfileOptimizer.Nesting
 {
     public class ProfileNestingPlan
     {
-        public UsageProfileMaterial Material { get; set; } = new UsageProfileMaterial();
+        public double Length { get; set; }
 
-        public List<UsageProfilePart> Parts { get; set; } = [];
+        public List<double> Segments { get; set; } = [];
+
+        public override string ToString()
+        {
+            if (Segments.Count == 0)
+            {
+                return "Empty";
+            }
+            return $"原材料长度:{Length}:{string.Join("+", Segments)}={Segments.Sum()}";
+        }
     }
 }
