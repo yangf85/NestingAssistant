@@ -15,7 +15,7 @@ namespace ProfileOptimizer.Nesting
 
         private ProfileNestingOption _option;
 
-        public List<ProfileNestingResult> Results { get; private set; }
+        public List<ProfileNestingPlan> Plans { get; private set; } = [];
 
         public ProfileNestingChromosome(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option) : base(materials.Sum(i => i.Piece))
         {
@@ -28,7 +28,7 @@ namespace ProfileOptimizer.Nesting
 
         public override IChromosome CreateNew()
         {
-            throw new NotImplementedException();
+            return new ProfileNestingChromosome(_materials, _parts, _option);
         }
 
         public override Gene GenerateGene(int geneIndex)
@@ -36,53 +36,29 @@ namespace ProfileOptimizer.Nesting
             throw new NotImplementedException();
         }
 
-        public List<UsageProfileMaterial> Init()
+        public void Init()
         {
             var materials = new List<UsageProfileMaterial>(_materials.Sum(i => i.Piece));
             var parts = new List<UsageProfilePart>(_parts.Sum(i => i.Piece));
 
-            // 按长度对零件进行排序（从大到小）
-            parts = parts.OrderByDescending(p => p.Length).ToList();
-
-            foreach (var material in materials)
+            for (int i = 0; i < materials.Count; i++)
             {
-                if (parts.Count == 0)
+                var result = new ProfileNestingPlan();
+                result.Material = new UsageProfileMaterial()
                 {
-                    break;
+                    Id = i,
+                    Length = _materials[i].Length,
+                };
+
+                for (int j = 0; j < _option.MaxSegments; j++)
+                {
+                    var index = RandomizationProvider.Current.GetInt(0, parts.Count);
+
+                    result.Parts.Add(parts[index]);
                 }
 
-                while (material.RemainLength > 0 && parts.Count > 0)
-                {
-                    if (material.Parts.Count >= _option.MaxSegments)
-                    {
-                        break;
-                    }
-
-                    // 寻找适合当前原材料剩余长度的零件
-                    UsageProfilePart? selectedPart = null;
-                    for (int i = 0; i < parts.Count; i++)
-                    {
-                        if (parts[i].Length <= material.RemainLength)
-                        {
-                            selectedPart = parts[i];
-                            parts.RemoveAt(i);
-                            break;
-                        }
-                    }
-
-                    if (selectedPart.HasValue)
-                    {
-                        material.Parts.Add(selectedPart.Value);
-                    }
-                    else
-                    {
-                        // 没有适合的零件可以放置，跳出循环
-                        break;
-                    }
-                }
+                Plans.Add(result);
             }
-
-            return materials;
         }
     }
 }

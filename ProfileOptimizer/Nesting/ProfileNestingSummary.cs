@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProfileOptimizer.Nesting
 {
-    public struct UsageProfileMaterial
+    internal class ProfileNestingSummary
     {
-        public int Id { get; set; }
-
-        public double Length { get; set; }
     }
 }

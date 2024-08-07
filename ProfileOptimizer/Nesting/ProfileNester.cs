@@ -21,7 +21,7 @@ namespace ProfileOptimizer.Nesting
             _option = option;
         }
 
-        public List<ProfileNestingResult> Nest()
+        public List<ProfileNestingPlan> Nest()
         {
             return null;
         }
