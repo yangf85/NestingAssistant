@@ -53,11 +53,29 @@ namespace ProfileOptimizer.Nesting
                     Length = materialLengths[i],
                 };
 
-                for (int j = 0; j < _option.MaxSegments; j++)
+                while (true)
                 {
+                    if (partLengths.Count == 0)
+                    {
+                        plan.Segments.Add(0);
+                        break;
+                    }
                     var index = RandomizationProvider.Current.GetInt(0, partLengths.Count);
+
                     plan.Segments.Add(partLengths[index]);
+
+                    if (plan.Length < plan.Segments.Sum())
+                    {
+                        plan.Segments.RemoveAt(plan.Segments.Count - 1);
+                        partLengths.Add(partLengths[index]);
+                        break;
+                    }
+                    else
+                    {
+                        partLengths.RemoveAt(index);
+                    }
                 }
+
                 Plans.Add(plan);
             }
         }

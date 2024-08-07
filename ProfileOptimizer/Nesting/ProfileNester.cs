@@ -27,17 +27,17 @@ namespace ProfileOptimizer.Nesting
         public void Nest()
         {
             var selection = new EliteSelection();
-            var crossover = new ThreeParentCrossover();
-            var mutation = new UniformMutation();
+            var crossover = new UniformCrossover();
+            var mutation = new UniformMutation(true);
             var fitness = new ProfileNestingFitness(_materials, _parts, _option);
             var chromosome = new ProfileNestingChromosome(_materials, _parts, _option);
-            var population = new Population(50, 100, chromosome);
+            var population = new Population(50, 500, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
                 Termination = new OrTermination(
                     new FitnessThresholdTermination(0),
-                    new GenerationNumberTermination(500)) // 设定最大世代数，防止无限运行
+                    new GenerationNumberTermination(5000)) // 设定最大世代数，防止无限运行
             };
 
             ga.GenerationRan += (s, e) =>

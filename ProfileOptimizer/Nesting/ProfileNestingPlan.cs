@@ -18,7 +18,7 @@ namespace ProfileOptimizer.Nesting
             {
                 return "Empty";
             }
-            return $"原材料长度:{Length}:{string.Join("+", Segments)}={Segments.Sum()}";
+            return $"{Length}:{Segments.Sum()}={string.Join("+", Segments)}";
         }
     }
 }
