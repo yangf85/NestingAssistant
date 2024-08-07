@@ -46,12 +46,21 @@ namespace ProfileOptimizer.Nesting
             var materialLengths = materials.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).ToList();
             var partLengths = parts.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).ToList();
 
-            for (int i = 0; i < materialLengths.Count; i++)
+            // 预先对零件长度进行排序
+            partLengths.Sort();
+
+            while (materialLengths.Count > 0)
             {
+                // 随机选择一个原材料
+                var materialIndex = RandomizationProvider.Current.GetInt(0, materialLengths.Count);
+                var materialLength = materialLengths[materialIndex];
+
                 var plan = new ProfileNestingPlan()
                 {
-                    Length = materialLengths[i],
+                    Length = materialLength,
                 };
+
+                materialLengths.RemoveAt(materialIndex);
 
                 while (true)
                 {
@@ -60,18 +69,38 @@ namespace ProfileOptimizer.Nesting
                         plan.Segments.Add(0);
                         break;
                     }
-                    var index = RandomizationProvider.Current.GetInt(0, partLengths.Count);
 
-                    plan.Segments.Add(partLengths[index]);
+                    // 当前剩余长度
+                    double remainingLength = plan.Length - plan.Segments.Sum();
 
+                    // 使用二分查找找到最接近剩余长度的零件
+                    int index = partLengths.BinarySearch(remainingLength);
+
+                    // 如果找不到完全匹配的零件，BinarySearch 返回一个负数，
+                    // 这个负数的绝对值表示插入点的索引。
+                    if (index < 0)
+                    {
+                        index = ~index;
+
+                        // 选择最接近的零件
+                        if (index == partLengths.Count || (index > 0 && remainingLength - partLengths[index - 1] < partLengths[index] - remainingLength))
+                        {
+                            index--;
+                        }
+                    }
+
+                    // 选择零件并进行尝试添加
+                    double selectedPart = partLengths[index];
+                    plan.Segments.Add(selectedPart);
                     if (plan.Length < plan.Segments.Sum())
                     {
+                        // 如果超过了原材料长度，撤销上一步操作
                         plan.Segments.RemoveAt(plan.Segments.Count - 1);
-                        partLengths.Add(partLengths[index]);
                         break;
                     }
                     else
                     {
+                        // 从可用零件列表中移除已使用的零件
                         partLengths.RemoveAt(index);
                     }
                 }

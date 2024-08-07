@@ -28,7 +28,7 @@ namespace ProfileOptimizer.Nesting
         // 权重设置
         private const double WeightRemainingLength = 100.0;
 
-        private const double WeightMaxSegments = 1.0;
+        private const double WeightMaxSegments = 10.0;
         private const double WeightMaterialVariety = 5.0;
         private const double WeightSamePartsInMaterial = 5.0;
 

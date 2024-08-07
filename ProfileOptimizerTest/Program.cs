@@ -18,7 +18,7 @@ var parts = new List<ProfilePart>
             new ProfilePart { Length = 600, Piece = 8},
             new ProfilePart { Length = 400, Piece = 20},
             new ProfilePart { Length = 300, Piece = 18},
-            new ProfilePart { Length = 900, Piece = 38},
+            new ProfilePart { Length = 900, Piece = 32},
         };
 var option = new ProfileNestingOption();
 
