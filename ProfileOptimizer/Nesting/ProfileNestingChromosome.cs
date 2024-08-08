@@ -66,7 +66,6 @@ namespace ProfileOptimizer.Nesting
                 {
                     if (partLengths.Count == 0)
                     {
-                        plan.Segments.Add(0);
                         break;
                     }
 
@@ -102,6 +101,11 @@ namespace ProfileOptimizer.Nesting
                     {
                         // 从可用零件列表中移除已使用的零件
                         partLengths.RemoveAt(index);
+                    }
+
+                    if (plan.Segments.Count == _option.MaxSegments)
+                    {
+                        break;
                     }
                 }
 
