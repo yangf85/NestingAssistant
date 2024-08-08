@@ -1,5 +1,6 @@
 ﻿using GeneticSharp;
 using Microsoft.VisualBasic.FileIO;
+using ProfileOptimizer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,22 +23,23 @@ namespace ProfileOptimizer.Nesting
             _materials = materials;
             _parts = parts;
             _option = option;
+            QuantizationProfileMaterialLength();
+            QuantizationProfilePartLength();
         }
 
         public void Nest()
         {
             var selection = new EliteSelection();
-            var crossover = new UniformCrossover(0.3f);
-            var mutation = new UniformMutation(true);
+            var crossover = new TwoPointCrossover();
+            var mutation = new TworsMutation();
             var fitness = new ProfileNestingFitness(_materials, _parts, _option);
             var chromosome = new ProfileNestingChromosome(_materials, _parts, _option);
-            var population = new Population(50, 500, chromosome);
+            var population = new Population(50, 1000, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                Termination = new OrTermination(
-                    new FitnessThresholdTermination(0),
-                    new GenerationNumberTermination(2000)) // 设定最大世代数，防止无限运行
+                Termination = new OrTermination(new FitnessThresholdTermination(0),
+                new GenerationNumberTermination(1000)),
             };
 
             ga.GenerationRan += (s, e) =>
@@ -75,6 +77,49 @@ namespace ProfileOptimizer.Nesting
             foreach (var item in group2)
             {
                 Console.WriteLine($"Part Length: {item.Key}, Count: {item.Value}");
+            }
+        }
+
+        private Dictionary<string, (List<ProfileMaterial> Materials, List<ProfilePart> Parts)> Group(List<ProfileMaterial> materials, List<ProfilePart> parts)
+        {
+            var materialGroups = materials.GroupBy(m => m.Type).ToDictionary(g => g.Key, g => g.ToList());
+            var partGroups = parts.GroupBy(p => p.Type).ToDictionary(g => g.Key, g => g.ToList());
+
+            // 获取所有的类型
+            var materialTypes = new HashSet<string>(materialGroups.Keys);
+            var partTypes = new HashSet<string>(partGroups.Keys);
+
+            // 验证类型是否匹配
+            if (!materialTypes.SetEquals(partTypes))
+            {
+                var missingMaterialTypes = string.Join(", ", partTypes.Except(materialTypes));
+                var missingPartTypes = string.Join(", ", materialTypes.Except(partTypes));
+                throw new ProfileTypeMismatchException($"Material types not matching with part types.\nMissing Material Types: {missingMaterialTypes}\nMissing Part Types: {missingPartTypes}");
+            }
+
+            var result = new Dictionary<string, (List<ProfileMaterial> Materials, List<ProfilePart> Parts)>();
+
+            foreach (var key in materialGroups.Keys)
+            {
+                result.Add(key, (materialGroups[key], partGroups[key]));
+            }
+
+            return result;
+        }
+
+        private void QuantizationProfileMaterialLength()
+        {
+            foreach (var material in _materials)
+            {
+                material.Length = Math.Round(material.Length, 6);
+            }
+        }
+
+        private void QuantizationProfilePartLength()
+        {
+            foreach (var material in _parts)
+            {
+                material.Length = Math.Round(material.Length, 6);
             }
         }
     }

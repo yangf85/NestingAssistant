@@ -10,6 +10,8 @@ namespace ProfileOptimizer.Nesting
     {
         public double Length { get; set; }
 
+        public double RemainLength { get; set; }
+
         public List<double> Segments { get; set; } = [];
 
         public override string ToString()
@@ -18,7 +20,7 @@ namespace ProfileOptimizer.Nesting
             {
                 return "Empty";
             }
-            return $"{Length}:{Segments.Sum()}={string.Join("+", Segments)}";
+            return $"{Length}:{Segments.Sum()}={string.Join("+", Segments.Select(i => i))}";
         }
     }
 }

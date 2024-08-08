@@ -12,6 +12,15 @@ namespace ProfileOptimizer.Nesting
     /// </summary>
     public class ProfileNestingFitness : IFitness
     {
+        // 权重设置
+        private const double WeightRemainingLength = 100.0;
+
+        private const double WeightMaxSegments = 10.0;
+
+        private const double WeightMaterialVariety = 5.0;
+
+        private const double WeightSamePartsInMaterial = 5.0;
+
         private List<ProfileMaterial> _materials;
 
         private List<ProfilePart> _parts;
@@ -24,13 +33,6 @@ namespace ProfileOptimizer.Nesting
             _parts = parts;
             _option = option;
         }
-
-        // 权重设置
-        private const double WeightRemainingLength = 100.0;
-
-        private const double WeightMaxSegments = 10.0;
-        private const double WeightMaterialVariety = 5.0;
-        private const double WeightSamePartsInMaterial = 5.0;
 
         // 适应度函数需要满足以下条件：
         // 1. 所使用的每种长度的原材料数量不能超过给定的对应长度的原材料库存。
@@ -49,6 +51,15 @@ namespace ProfileOptimizer.Nesting
         public double Evaluate(IChromosome chromosome)
         {
             var plans = chromosome.GetGenes().Select(i => (ProfileNestingPlan)i.Value).ToList();
+
+            // 条件 5：在每根原材料上放置的零件数量应尽可能多，但不能超过设定的最大数量
+            foreach (var plan in plans)
+            {
+                if (plan.Segments.Count > _option.MaxSegments)
+                {
+                    return double.MinValue;
+                }
+            }
 
             // 记录每种长度的原材料使用数量
             var materialUsage = new Dictionary<double, int>();
@@ -117,15 +128,6 @@ namespace ProfileOptimizer.Nesting
             {
                 double totalPartsLength = plan.Segments.Sum();
                 fitness -= (plan.Length - totalPartsLength) * WeightRemainingLength;
-            }
-
-            // 条件 5：在每根原材料上放置的零件数量应尽可能多，但不能超过设定的最大数量
-            foreach (var plan in plans)
-            {
-                if (plan.Segments.Count <= _option.MaxSegments)
-                {
-                    fitness += plan.Segments.Count * WeightMaxSegments;
-                }
             }
 
             // 条件 6：尽可能的把相同的零件放在同一根原材料上

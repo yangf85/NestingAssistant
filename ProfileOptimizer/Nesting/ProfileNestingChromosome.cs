@@ -38,26 +38,22 @@ namespace ProfileOptimizer.Nesting
         public override Gene GenerateGene(int geneIndex)
         {
             var index = RandomizationProvider.Current.GetInt(0, Plans.Count);
+            //Plans.RemoveAt(index);
             return new Gene(Plans[index]);
         }
 
         private void Init(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
         {
-            var materialLengths = materials.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).ToList();
-            var partLengths = parts.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).ToList();
-
-            // 预先对零件长度进行排序
-            partLengths.Sort();
+            var materialLengths = materials.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).OrderBy(x => x).ToList();
+            var partLengths = parts.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).OrderBy(x => x).ToList();
 
             while (materialLengths.Count > 0)
             {
-                // 随机选择一个原材料
                 var materialIndex = RandomizationProvider.Current.GetInt(0, materialLengths.Count);
-                var materialLength = materialLengths[materialIndex];
 
-                var plan = new ProfileNestingPlan()
+                var plan = new ProfileNestingPlan
                 {
-                    Length = materialLength,
+                    Length = materialLengths[materialIndex],
                 };
 
                 materialLengths.RemoveAt(materialIndex);
@@ -69,38 +65,25 @@ namespace ProfileOptimizer.Nesting
                         break;
                     }
 
-                    // 当前剩余长度
-                    double remainingLength = plan.Length - plan.Segments.Sum();
-
-                    // 使用二分查找找到最接近剩余长度的零件
-                    int index = partLengths.BinarySearch(remainingLength);
-
-                    // 如果找不到完全匹配的零件，BinarySearch 返回一个负数，
-                    // 这个负数的绝对值表示插入点的索引。
-                    if (index < 0)
+                    var remainLength = plan.Segments.Count switch
                     {
-                        index = ~index;
+                        0 => plan.Length,
+                        _ => plan.Length - (plan.Segments.Sum() + (plan.Segments.Count - 1) * option.Spacing)
+                    };
 
-                        // 选择最接近的零件
-                        if (index == partLengths.Count || (index > 0 && remainingLength - partLengths[index - 1] < partLengths[index] - remainingLength))
-                        {
-                            index--;
-                        }
-                    }
+                    var index = FindClosestIndexNotGreaterThan(remainLength, partLengths);
 
-                    // 选择零件并进行尝试添加
-                    double selectedPart = partLengths[index];
-                    plan.Segments.Add(selectedPart);
-                    if (plan.Length < plan.Segments.Sum())
+                    if (index == -1)
                     {
-                        // 如果超过了原材料长度，撤销上一步操作
-                        plan.Segments.RemoveAt(plan.Segments.Count - 1);
                         break;
                     }
                     else
                     {
-                        // 从可用零件列表中移除已使用的零件
-                        partLengths.RemoveAt(index);
+                        if (plan.Segments.Count < _option.MaxSegments)
+                        {
+                            plan.Segments.Add(partLengths[index]);
+                            partLengths.RemoveAt(index);
+                        }
                     }
 
                     if (plan.Segments.Count == _option.MaxSegments)
@@ -110,6 +93,34 @@ namespace ProfileOptimizer.Nesting
                 }
 
                 Plans.Add(plan);
+            }
+        }
+
+        private int FindClosestIndexNotGreaterThan(double num, List<double> numbers)
+        {
+            int index = numbers.BinarySearch(num);
+
+            if (index >= 0)
+            {
+                // 如果找到目标值，直接返回索引
+                return index;
+            }
+            else
+            {
+                // 如果没有找到目标值，BinarySearch 返回负数，
+                // 该负数是一个位移操作后的值，表示第一个大于目标元素的索引。
+                int insertionPoint = ~index;
+
+                // 如果插入点为0，说明目标值比所有元素都小
+                if (insertionPoint == 0)
+                {
+                    return -1; // 没有符合条件的元素
+                }
+                else
+                {
+                    // 返回插入点前一个位置的索引
+                    return insertionPoint - 1;
+                }
             }
         }
     }
