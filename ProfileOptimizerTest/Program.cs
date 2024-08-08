@@ -20,7 +20,10 @@ var parts = new List<ProfilePart>
             new ProfilePart { Length = 300, Piece = 18},
             new ProfilePart { Length = 900, Piece = 32},
         };
-var option = new ProfileNestingOption();
+var option = new ProfileNestingOption()
+{
+    MaxSegments = 10,
+};
 
 var nester = new ProfileNester(materials, parts, option);
 nester.Nest();

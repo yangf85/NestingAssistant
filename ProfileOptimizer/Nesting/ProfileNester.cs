@@ -30,16 +30,16 @@ namespace ProfileOptimizer.Nesting
         public void Nest()
         {
             var selection = new EliteSelection();
-            var crossover = new TwoPointCrossover();
-            var mutation = new TworsMutation();
+            var crossover = new UniformCrossover(0.1f);
+            var mutation = new UniformMutation(true);
             var fitness = new ProfileNestingFitness(_materials, _parts, _option);
             var chromosome = new ProfileNestingChromosome(_materials, _parts, _option);
-            var population = new Population(50, 1000, chromosome);
+            var population = new Population(50, 100, chromosome);
 
             var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
                 Termination = new OrTermination(new FitnessThresholdTermination(0),
-                new GenerationNumberTermination(1000)),
+                new GenerationNumberTermination(2000)),
             };
 
             ga.GenerationRan += (s, e) =>
