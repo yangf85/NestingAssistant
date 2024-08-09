@@ -31,7 +31,9 @@
 	<UserControl.Resources />
 	<TabControl>
 		<TabItem Header="零件数据设置">
-			<Grid Grid.Row="0" RowDefinitions="*,Auto">
+			<Grid
+                Grid.Row="0"
+                RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -68,7 +70,9 @@
                         Command="{Binding ImportBasicDataCommand}"
                         CommandParameter="Part"
                         Content="导入零件数据(Excel)" />
-					<Button Content="从剪切板复制零件数据" IsEnabled="False" />
+					<Button
+                        Content="从剪切板复制零件数据"
+                        IsEnabled="False" />
 					<Button
                         Command="{Binding ExportTemplateCommand}"
                         CommandParameter="Part"
@@ -78,7 +82,9 @@
 			</Grid>
 		</TabItem>
 		<TabItem Header="原材料数据设置">
-			<Grid Grid.Row="0" RowDefinitions="*,Auto">
+			<Grid
+                Grid.Row="0"
+                RowDefinitions="*,Auto">
 				<DataGrid
                     GridLinesVisibility="Horizontal"
                     HeadersVisibility="All"
@@ -107,7 +113,9 @@
                         Command="{Binding ImportBasicDataCommand}"
                         CommandParameter="Material"
                         Content="导入原材料数据(Excel)" />
-					<Button Content="从剪切板复制原材料数据" IsEnabled="False" />
+					<Button
+                        Content="从剪切板复制原材料数据"
+                        IsEnabled="False" />
 					<Button
                         Command="{Binding ExportTemplateCommand}"
                         CommandParameter="Material"
@@ -120,50 +128,92 @@
 			<SplitView
                 DisplayMode="Inline"
                 IsPaneOpen="{Binding ElementName=DisplayToggleButton, Path=IsChecked}"
-                OpenPaneLength="750">
+                OpenPaneLength="850">
 				<SplitView.Pane>
-					<Grid RowDefinitions="Auto,*">
-						<StackPanel Grid.Row="0" Orientation="Vertical">
-							<u:Divider HorizontalContentAlignment="Left">
-								<TextBlock
-                                    FontSize="16"
-                                    FontWeight="Medium"
-                                    Text="数据汇总" />
-							</u:Divider>
-							<u:Form
+					<ScrollViewer>
+						<Grid
+                            MaxHeight="750"
+                            RowDefinitions="Auto,*,*">
+							<StackPanel
                                 Grid.Row="0"
-                                HorizontalAlignment="Stretch"
-                                LabelAlignment="Left"
-                                LabelPosition="Left"
-                                LabelWidth="*">
-								<u:FormItem
-                                    VerticalAlignment="Center"
-                                    VerticalContentAlignment="Center"
-                                    Label="综合利用率:">
-									<u:DoubleDisplayer
+                                Orientation="Vertical">
+								<u:Divider HorizontalContentAlignment="Left">
+									<TextBlock
+                                        FontSize="16"
+                                        FontWeight="Medium"
+                                        Text="数据汇总" />
+								</u:Divider>
+								<u:Form
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Stretch"
+                                    LabelAlignment="Left"
+                                    LabelPosition="Left"
+                                    LabelWidth="*">
+									<u:FormItem
                                         VerticalAlignment="Center"
-                                        StringFormat="P2"
-                                        Value="{Binding Summary.AverageUtilization}" />
-								</u:FormItem>
-								<u:FormItem Label="材料总数量:">
-									<u:Int32Displayer VerticalAlignment="Center" Value="{Binding Summary.MaterialPiece}" />
-								</u:FormItem>
-								<u:FormItem Label="零件总数量:">
-									<u:Int32Displayer VerticalAlignment="Center" Value="{Binding Summary.PartPiece}" />
-								</u:FormItem>
-								<u:FormItem Label="材料使用长度:">
-									<u:DoubleDisplayer VerticalAlignment="Center" Value="{Binding Summary.TotalLength}" />
-								</u:FormItem>
-								<u:FormItem Label="材料剩余长度:">
-									<u:DoubleDisplayer VerticalAlignment="Center" Value="{Binding Summary.TotalRemainLength}" />
-								</u:FormItem>
-							</u:Form>
-						</StackPanel>
-						<StackPanel
-                            Grid.Row="1"
-                            Margin="0,10,0,0"
-                            Orientation="Vertical">
-							<StackPanel Grid.Row="0" Orientation="Vertical">
+                                        VerticalContentAlignment="Center"
+                                        Label="综合利用率:">
+										<u:DoubleDisplayer
+                                            VerticalAlignment="Center"
+                                            StringFormat="P2"
+                                            Value="{Binding Summary.AverageUtilization}" />
+									</u:FormItem>
+									<u:FormItem Label="材料总数量:">
+										<u:Int32Displayer
+                                            VerticalAlignment="Center"
+                                            Value="{Binding Summary.MaterialPiece}" />
+									</u:FormItem>
+									<u:FormItem Label="零件总数量:">
+										<u:Int32Displayer
+                                            VerticalAlignment="Center"
+                                            Value="{Binding Summary.PartPiece}" />
+									</u:FormItem>
+									<u:FormItem Label="材料使用长度:">
+										<u:DoubleDisplayer
+                                            VerticalAlignment="Center"
+                                            Value="{Binding Summary.TotalLength}" />
+									</u:FormItem>
+									<u:FormItem Label="材料剩余长度:">
+										<u:DoubleDisplayer
+                                            VerticalAlignment="Center"
+                                            Value="{Binding Summary.TotalRemainLength}" />
+									</u:FormItem>
+								</u:Form>
+							</StackPanel>
+							<StackPanel
+                                Grid.Row="1"
+                                Margin="0,10,0,0"
+                                Orientation="Vertical">
+								<u:Divider HorizontalContentAlignment="Left">
+									<TextBlock
+                                        FontSize="16"
+                                        FontWeight="Medium"
+                                        Text="原材料汇总" />
+								</u:Divider>
+								<DataGrid
+                                    GridLinesVisibility="Horizontal"
+                                    IsReadOnly="True"
+                                    ItemsSource="{Binding Summary.Materials}">
+									<DataGrid.Columns>
+										<DataGridTextColumn
+                                            Width="6*"
+                                            Binding="{Binding Type}"
+                                            Header="类型" />
+										<DataGridTextColumn
+                                            Width="3*"
+                                            Binding="{Binding Length}"
+                                            Header="长度" />
+										<DataGridTextColumn
+                                            Width="3*"
+                                            Binding="{Binding Piece}"
+                                            Header="件数" />
+									</DataGrid.Columns>
+								</DataGrid>
+							</StackPanel>
+							<StackPanel
+                                Grid.Row="2"
+                                Margin="0,10,0,0"
+                                Orientation="Vertical">
 								<u:Divider HorizontalContentAlignment="Left">
 									<TextBlock
                                         FontSize="16"
@@ -171,7 +221,7 @@
                                         Text="排版汇总" />
 								</u:Divider>
 								<DataGrid
-                                    MaxHeight="450"
+                                    GridLinesVisibility="Horizontal"
                                     IsReadOnly="True"
                                     ItemsSource="{Binding Summary.Plans}">
 									<DataGrid.Columns>
@@ -198,8 +248,8 @@
 									</DataGrid.Columns>
 								</DataGrid>
 							</StackPanel>
-						</StackPanel>
-					</Grid>
+						</Grid>
+					</ScrollViewer>
 				</SplitView.Pane>
 				<u:LoadingContainer
                     Grid.Column="1"
@@ -232,7 +282,9 @@
                                     u:FormItem.Label="最大段数:"
                                     Minimum="0"
                                     Value="{Binding MaxSegments}" />
-								<CheckBox u:FormItem.Label="显示零件序号:" IsChecked="{Binding IsShowPartIndex}" />
+								<CheckBox
+                                    u:FormItem.Label="显示零件序号:"
+                                    IsChecked="{Binding IsShowPartIndex}" />
 							</u:FormGroup>
 							<!--<u:FormGroup Header="优化设置">
 								<u:NumericIntUpDown
@@ -263,7 +315,9 @@
                                 x:Name="DisplayToggleButton"
                                 Margin="10"
                                 Content="查看" />
-							<Button Command="{Binding ExportNestingSummaryCommand}" Content="导出" />
+							<Button
+                                Command="{Binding ExportNestingSummaryCommand}"
+                                Content="导出" />
 						</UniformGrid>
 					</Grid>
 				</u:LoadingContainer>

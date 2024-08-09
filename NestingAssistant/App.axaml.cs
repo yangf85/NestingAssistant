@@ -56,7 +56,7 @@ public partial class App : Application
         services.AddSingleton<IExcelService, ExcelService>();
         services.AddSingleton<IStorageService, StorageService>();
 
-        services.AddSingleton<ProfileNestingService>();
+        services.AddSingleton<IProfileNesterService, ProfileNesterService>();
         services.AddSingleton<ProfileNesterViewModel>();
 
         return services.BuildServiceProvider();

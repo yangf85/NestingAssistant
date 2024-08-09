@@ -20,17 +20,19 @@ namespace NestingAssistant.ViewModels
 {
     public partial class ProfileNesterViewModel : BasicViewModel
     {
-        private ProfileNestingService _service;
+        private readonly IProfileNesterService _service;
 
-        public ProfileNestingOptionViewModel Option { get; set; } = new();
+        [ObservableProperty]
+        private ProfileNestingOptionViewModel _option = new();
 
         public ObservableCollection<ProfilePartViewModel> ProfileParts { get; private set; } = [];
-
         public ObservableCollection<ProfileMaterialViewModel> ProfileMaterials { get; private set; } = [];
 
-        public ProfileNestingSummaryViewModel Summary { get; set; } = new();
+        [ObservableProperty]
+        private ProfileNestingSummaryViewModel _summary = new();
 
-        public ProfileNesterViewModel(IMessageBoxService messageBox, INotificationService notification, IMapper mapper, ProfileNestingService service) : base(messageBox, notification, mapper)
+        public ProfileNesterViewModel(IMessageBoxService messageBox, INotificationService notification, IMapper mapper, IProfileNesterService service)
+            : base(messageBox, notification, mapper)
         {
             _service = service;
         }
@@ -38,26 +40,12 @@ namespace NestingAssistant.ViewModels
         [RelayCommand]
         private async Task ExportTemplate(string type)
         {
-            var folder = await _service.Storage.OpenFolderAsync();
-            var path = folder?.TryGetLocalPath();
-            if (path == null)
-            {
-                return;
-            }
+            var path = await _service.PickFolderAsync();
+            if (path == null) return;
 
             try
             {
-                switch (type)
-                {
-                    case "Part":
-                        await _service.Excel.ExportAsync(new List<ProfilePartModel>(), Path.Combine(path, "ProfilePartTemplate.xlsx"));
-                        break;
-
-                    case "Material":
-                        await _service.Excel.ExportAsync(new List<ProfileMaterialModel>(), Path.Combine(path, "ProfileMaterialTemplate.xlsx"));
-                        break;
-                }
-
+                await _service.ExportTemplateAsync(type, path);
                 Notification.ShowNotification("导出成功", type: NotificationType.Success);
             }
             catch (Exception ex)
@@ -76,23 +64,8 @@ namespace NestingAssistant.ViewModels
                 _ => "选择文件数据",
             };
 
-            var options = new FilePickerOpenOptions
-            {
-                Title = title,
-                AllowMultiple = false,
-                FileTypeFilter =
-                [
-                    new FilePickerFileType("Excel Files") { Patterns = ["*.xlsx"] }
-                ]
-            };
-
-            var files = await _service.Storage.OpenFilesAsync(options);
-
-            if (files.Count == 0)
-            {
-                return;
-            }
-            var filepath = files[0].Path.LocalPath;
+            var filepath = await _service.PickFileAsync(title, new[] { "*.xlsx" });
+            if (filepath == null) return;
 
             try
             {
@@ -105,10 +78,8 @@ namespace NestingAssistant.ViewModels
                     case "Material":
                         await ImportMaterialData(filepath);
                         break;
-
-                    default:
-                        return;
                 }
+
                 Notification.ShowNotification("导入成功", type: NotificationType.Success);
             }
             catch (Exception ex)
@@ -119,9 +90,8 @@ namespace NestingAssistant.ViewModels
 
         private async Task ImportPartData(string filepath)
         {
-            var parts = await _service.Excel.ImportAsync<ProfilePartModel>(filepath);
+            var parts = await _service.ImportPartDataAsync(filepath);
             ProfileParts.Clear();
-
             foreach (var item in parts)
             {
                 ProfileParts.Add(Mapper.Map<ProfilePartViewModel>(item));
@@ -130,9 +100,8 @@ namespace NestingAssistant.ViewModels
 
         private async Task ImportMaterialData(string filepath)
         {
-            var materials = await _service.Excel.ImportAsync<ProfileMaterialModel>(filepath);
+            var materials = await _service.ImportMaterialDataAsync(filepath);
             ProfileMaterials.Clear();
-
             foreach (var item in materials)
             {
                 ProfileMaterials.Add(Mapper.Map<ProfileMaterialViewModel>(item));
@@ -146,8 +115,7 @@ namespace NestingAssistant.ViewModels
             var materials = ProfileMaterials.Select(i => Mapper.Map<ProfileMaterial>(i)).ToList();
             var option = Mapper.Map<ProfileNestingOption>(Option);
 
-            var summary = await _service.Run(parts, materials, option);
-
+            var summary = await _service.RunAsync(parts, materials, option);
             Summary = Mapper.Map<ProfileNestingSummaryViewModel>(summary);
 
             OnPropertyChanged(nameof(Summary));
@@ -156,29 +124,11 @@ namespace NestingAssistant.ViewModels
         [RelayCommand]
         private async Task ExportNestingSummary()
         {
-            var option = new FilePickerSaveOptions()
-            {
-                DefaultExtension = "xlsx",
-                ShowOverwritePrompt = true,
-                Title = "保存套裁数据",
-                SuggestedFileName = "ProfileNestingResult",
-                FileTypeChoices = [new FilePickerFileType("Excel Files") { Patterns = ["*.xlsx"] }]
-            };
-
-            var file = await _service.Storage.SaveFileAsync(option);
-            if (file == null)
-            {
-                return;
-            }
-
-            var filepath = file.TryGetLocalPath();
+            var filepath = await _service.SaveFileAsync("保存套裁数据", "ProfileNestingResult", "xlsx", ["*.xlsx"]);
+            if (filepath == null) return;
 
             var data = Mapper.Map<ProfileNestingSummary>(Summary);
-
-            //dict["数据汇总"] = NestingResult.Summaries.Select(i => Mapper.Map<ProfileNestingSummaryModel>(i));
-            //dict["排版汇总"] = NestingResult.Materials.Select(i => Mapper.Map<UsageProfileMaterialModel>(i));
-
-            await _service.Excel.ExportByTemplateAsync(filepath, @"F:\OneDrive\桌面\ProfileNestingSummaryTemplate.xlsx", data);
+            await _service.SaveNestingSummaryAsync(filepath, data);
         }
     }
 }
