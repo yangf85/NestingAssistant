@@ -24,5 +24,9 @@ namespace NestingAssistant.ViewModels
         [Range(1, 99999)]
         [ObservableProperty]
         private double _length;
+
+        [Range(0, 999999)]
+        [ObservableProperty]
+        private int _index;
     }
 }

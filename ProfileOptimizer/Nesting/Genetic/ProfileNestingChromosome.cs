@@ -1,69 +1,49 @@
 ﻿using GeneticSharp;
-using ProfileOptimizer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ProfileOptimizer.Nesting
 {
-    public class SimpleProfileNester
+    public class ProfileNestingChromosome : ChromosomeBase
     {
-        private readonly List<ProfileMaterial> _materials;
+        private List<ProfileMaterial> _materials;
 
-        private readonly List<ProfilePart> _parts;
+        private List<ProfilePart> _parts;
 
-        private readonly ProfileNestingOption _option;
+        private ProfileNestingOption _option;
 
-        public List<ProfileNestingPlan> Plans { get; private set; } = [];
+        public List<GeneticProfileNestingPlan> Plans { get; private set; }
 
-        public SimpleProfileNester(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
+        public ProfileNestingChromosome(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option) : base(materials.Sum(i => i.Piece))
         {
             _materials = materials;
             _parts = parts;
             _option = option;
 
-            QuantizationProfileMaterialLength();
-            QuantizationProfilePartLength();
+            Plans = new List<GeneticProfileNestingPlan>(Length);
+
+            Init(materials, parts, option);
+
+            CreateGenes();
         }
 
-        private Dictionary<string, (List<ProfileMaterial> Materials, List<ProfilePart> Parts)> GroupByType(List<ProfileMaterial> materials, List<ProfilePart> parts)
+        public override IChromosome CreateNew()
         {
-            var materialGroups = materials.GroupBy(m => m.Type).ToDictionary(g => g.Key, g => g.ToList());
-            var partGroups = parts.GroupBy(p => p.Type).ToDictionary(g => g.Key, g => g.ToList());
-
-            // 获取所有的类型
-            var materialTypes = new HashSet<string>(materialGroups.Keys);
-            var partTypes = new HashSet<string>(partGroups.Keys);
-
-            // 验证类型是否匹配
-            if (!materialTypes.SetEquals(partTypes))
-            {
-                var missingMaterialTypes = string.Join(", ", partTypes.Except(materialTypes));
-                var missingPartTypes = string.Join(", ", materialTypes.Except(partTypes));
-                throw new ProfileTypeMismatchException($"Material types not matching with part types.\nMissing Material Types: {missingMaterialTypes}\nMissing Part Types: {missingPartTypes}");
-            }
-
-            var result = new Dictionary<string, (List<ProfileMaterial> Materials, List<ProfilePart> Parts)>();
-
-            foreach (var key in materialGroups.Keys)
-            {
-                result.Add(key, (materialGroups[key], partGroups[key]));
-            }
-
-            return result;
+            return new ProfileNestingChromosome(_materials, _parts, _option);
         }
 
-        public void Nest()
+        public override Gene GenerateGene(int geneIndex)
         {
+            var index = RandomizationProvider.Current.GetInt(0, Plans.Count);
+            //Plans.RemoveAt(index);
+            return new Gene(Plans[index]);
         }
 
-        private List<ProfileNestingPlan> Nest(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
+        private void Init(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
         {
-            var result = new List<ProfileNestingPlan>();
-
             var materialLengths = materials.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).OrderBy(x => x).ToList();
             var partLengths = parts.SelectMany(i => Enumerable.Repeat(i.Length, i.Piece)).OrderBy(x => x).ToList();
 
@@ -71,7 +51,7 @@ namespace ProfileOptimizer.Nesting
             {
                 var materialIndex = RandomizationProvider.Current.GetInt(0, materialLengths.Count);
 
-                var plan = new ProfileNestingPlan
+                var plan = new GeneticProfileNestingPlan
                 {
                     Length = materialLengths[materialIndex],
                 };
@@ -112,9 +92,8 @@ namespace ProfileOptimizer.Nesting
                     }
                 }
 
-                result.Add(plan);
+                Plans.Add(plan);
             }
-            return result;
         }
 
         private int FindClosestIndexNotGreaterThan(double num, List<double> numbers)
@@ -142,22 +121,6 @@ namespace ProfileOptimizer.Nesting
                     // 返回插入点前一个位置的索引
                     return insertionPoint - 1;
                 }
-            }
-        }
-
-        private void QuantizationProfileMaterialLength()
-        {
-            foreach (var material in _materials)
-            {
-                material.Length = Math.Round(material.Length, 6);
-            }
-        }
-
-        private void QuantizationProfilePartLength()
-        {
-            foreach (var material in _parts)
-            {
-                material.Length = Math.Round(material.Length, 6);
             }
         }
     }

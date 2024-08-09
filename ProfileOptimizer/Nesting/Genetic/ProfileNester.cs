@@ -45,7 +45,7 @@ namespace ProfileOptimizer.Nesting
             ga.GenerationRan += (s, e) =>
             {
                 var bestChromosome = ga.BestChromosome as ProfileNestingChromosome;
-                var genes = bestChromosome.GetGenes().Select(g => (ProfileNestingPlan)g.Value).ToList();
+                var genes = bestChromosome.GetGenes().Select(g => (GeneticProfileNestingPlan)g.Value).ToList();
 
                 Console.WriteLine($"Generation {ga.GenerationsNumber} best solution:");
                 foreach (var plan in genes)
@@ -57,7 +57,7 @@ namespace ProfileOptimizer.Nesting
             ga.Start();
 
             var best = ga.BestChromosome as ProfileNestingChromosome;
-            var bestGenes = best.GetGenes().Select(g => (ProfileNestingPlan)g.Value).ToList();
+            var bestGenes = best.GetGenes().Select(g => (GeneticProfileNestingPlan)g.Value).ToList();
 
             Console.WriteLine("Best solution found:");
             foreach (var plan in bestGenes)

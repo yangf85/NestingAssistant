@@ -34,6 +34,7 @@
 		<FontWeight x:Key="TextBlockTitleFontWeight">500</FontWeight>
 		<FontWeight x:Key="ToggleButtonDefaultFontWeight">500</FontWeight>
 
+		<CornerRadius x:Key="CheckBoxBoxCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="ButtonCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="ToggleButtonCornerRadius">0</CornerRadius>
 		<CornerRadius x:Key="TextBoxCornerRadius">0</CornerRadius>

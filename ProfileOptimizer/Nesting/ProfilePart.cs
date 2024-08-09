@@ -14,13 +14,16 @@ public class ProfilePart
 
     public double Length { get; set; }
 
+    public int Index { get; set; }
+
     public int Piece { get; set; }
 
     public ProfilePart()
     {
         Type = "Profile";
-        Label = "Profile-2000";
+        Label = string.Empty;
         Length = 2000;
         Piece = 5;
+        Index = 0;
     }
 }

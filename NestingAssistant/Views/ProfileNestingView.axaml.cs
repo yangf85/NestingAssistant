@@ -17,6 +17,6 @@ public partial class ProfileNestingView : UserControl
 
     private void ProfileNestingView_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        DataContext = Ioc.Default.GetService<ProfileNestingViewModel>();
+        DataContext = Ioc.Default.GetService<ProfileNesterViewModel>();
     }
 }

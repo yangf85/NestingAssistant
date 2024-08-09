@@ -1,5 +1,6 @@
 ﻿using NestingAssistant.Models;
 using NestingAssistant.ViewModels;
+using ProfileOptimizer.Nesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,11 @@ namespace NestingAssistant.Services
             Storage = storage;
         }
 
-        public Task<IEnumerable<ProfileNestingResultViewModel>> Run(IEnumerable<ProfilePartViewModel> parts, IEnumerable<ProfileMaterialViewModel> materials, ProfileNestingOptionViewModel option)
+        public Task<ProfileNestingSummary> Run(IEnumerable<ProfilePart> parts, IEnumerable<ProfileMaterial> materials, ProfileNestingOption option)
         {
-            return null;
+            var nester = new GreedyProfileNester(parts.ToList(), materials.ToList(), option);
+
+            return nester.NestAsync();
         }
     }
 }

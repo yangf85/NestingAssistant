@@ -11,12 +11,12 @@ namespace NestingAssistant.Services
 {
     public class ExcelService : IExcelService
     {
-        public Task<IEnumerable<T>> Import<T>(string filePath) where T : class, new()
+        public Task<IEnumerable<T>> ImportAsync<T>(string filePath) where T : class, new()
         {
             return MiniExcel.QueryAsync<T>(filePath);
         }
 
-        public Task Export<T>(List<T> data, string filePath)
+        public Task ExportAsync<T>(List<T> data, string filePath)
         {
             var config = new OpenXmlConfiguration()
             {
@@ -26,7 +26,7 @@ namespace NestingAssistant.Services
             return MiniExcel.SaveAsAsync(filePath, data, true, "数据", overwriteFile: true, configuration: config);
         }
 
-        public Task ExportMultipleSheets(Dictionary<string, object> sheets, string filePath)
+        public Task ExportMultipleSheetsAsync(Dictionary<string, object> sheets, string filePath)
         {
             var config = new OpenXmlConfiguration()
             {
@@ -36,7 +36,7 @@ namespace NestingAssistant.Services
             return MiniExcel.SaveAsAsync(filePath, sheets, true, overwriteFile: true, configuration: config);
         }
 
-        public async Task<Dictionary<string, IEnumerable>> ImportMultipleSheets(string filePath, params string[] sheetNames)
+        public async Task<Dictionary<string, IEnumerable>> ImportMultipleSheetsAsync(string filePath, params string[] sheetNames)
         {
             var dictionary = new Dictionary<string, IEnumerable>();
 
@@ -46,6 +46,11 @@ namespace NestingAssistant.Services
             }
 
             return dictionary;
+        }
+
+        public Task ExportByTemplateAsync(string filePath, string templatePath, object data)
+        {
+            return MiniExcel.SaveAsByTemplateAsync(filePath, templatePath, data);
         }
     }
 }

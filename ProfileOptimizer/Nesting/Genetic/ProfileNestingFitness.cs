@@ -18,16 +18,25 @@ namespace ProfileOptimizer.Nesting
     public class ProfileNestingFitness : IFitness
     {
         private const double PenaltyExceededLength = 10000;        // 超过原材料长度的惩罚权重
+
         private const double PenaltyExceededPartUsage = 10000;     // 超过零件需求数量的惩罚权重
+
         private const double PenaltyUnderPartUsage = 10000;         // 少于零件需求数量的惩罚权重
+
         private const double PenaltyExceededMaterialUsage = 10000; // 超过原材料库存的惩罚权重
+
         private const double PenaltyExceededMaxSegments = 10000;    // 超过单根原材料最大零件数量的惩罚权重
+
         private const double WeightRemainingLength = 1;            // 原材料剩余长度的权重
+
         private const double WeightSamePartsInMaterial = 10;       // 相同零件放在同一根原材料上的奖励权重
+
         private const double WeightMaterialVariety = 50;           // 使用原材料种类数量的权重
 
         private readonly List<ProfileMaterial> _materials;
+
         private readonly List<ProfilePart> _parts;
+
         private readonly ProfileNestingOption _option;
 
         public ProfileNestingFitness(List<ProfileMaterial> materials, List<ProfilePart> parts, ProfileNestingOption option)
@@ -39,7 +48,7 @@ namespace ProfileOptimizer.Nesting
 
         public double Evaluate(IChromosome chromosome)
         {
-            var plans = chromosome.GetGenes().Select(i => (ProfileNestingPlan)i.Value).ToList();
+            var plans = chromosome.GetGenes().Select(i => (GeneticProfileNestingPlan)i.Value).ToList();
 
             // 初始化惩罚值
             double penalty = 0;

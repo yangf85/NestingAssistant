@@ -1,10 +1,12 @@
 ﻿namespace ProfileOptimizer.Nesting
 {
-    public class UsageProfilePart : IComparable<UsageProfilePart>
+    public class UsageProfilePart : IComparable<UsageProfilePart>, IEquatable<UsageProfilePart>
     {
         public int Id { get; set; }
 
         public double Length { get; set; }
+
+        public int Index { get; set; }
 
         public string Type { get; set; }
 
@@ -35,6 +37,37 @@
 
             // 最后按Length比较
             return Length.CompareTo(other.Length);
+        }
+
+        public bool Equals(UsageProfilePart? other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return string.Equals(Type, other.Type, StringComparison.Ordinal) &&
+                   string.Equals(Label, other.Label, StringComparison.Ordinal) &&
+                   Length == other.Length;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is UsageProfilePart other)
+            {
+                return Equals(other);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 31 + (Type?.GetHashCode(StringComparison.Ordinal) ?? 0);
+            hash = hash * 31 + (Label?.GetHashCode(StringComparison.Ordinal) ?? 0);
+            hash = hash * 31 + Length.GetHashCode();
+            return hash;
         }
     }
 }

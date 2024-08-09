@@ -29,5 +29,8 @@ namespace NestingAssistant.ViewModels
         [ObservableProperty]
         [Range(0, 1)]
         private double _mutationRate = 0.1;
+
+        [ObservableProperty]
+        private bool _isShowPartIndex;
     }
 }

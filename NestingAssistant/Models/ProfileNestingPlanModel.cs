@@ -1,6 +1,12 @@
-﻿namespace ProfileOptimizer.Nesting
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NestingAssistant.Models
 {
-    public class ProfileNestingPlan
+    public class ProfileNestingPlanModel
     {
         public double Length { get; set; }
 

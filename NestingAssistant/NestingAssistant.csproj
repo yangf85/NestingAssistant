@@ -13,6 +13,11 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
+  
+  <ItemGroup>
+    <None Remove="ExcelTemplates\ProfileNestingSummaryTemplate.xlsx" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.1.1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.1" />
@@ -33,6 +38,12 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Styles\FormGroupControlTheme.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="ExcelTemplates\ProfileNestingSummaryTemplate.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
   </ItemGroup>
 
   <ItemGroup>

@@ -14,6 +14,8 @@ namespace NestingAssistant.Models
 
         public int MaxSegments { get; set; }
 
+        public bool IsShowPartIndex { get; set; }
+
         public int PopulationSize { get; set; }
 
         public int Generations { get; set; }

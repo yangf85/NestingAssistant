@@ -57,7 +57,7 @@ public partial class App : Application
         services.AddSingleton<IStorageService, StorageService>();
 
         services.AddSingleton<ProfileNestingService>();
-        services.AddSingleton<ProfileNestingViewModel>();
+        services.AddSingleton<ProfileNesterViewModel>();
 
         return services.BuildServiceProvider();
     }

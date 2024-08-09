@@ -18,7 +18,10 @@ namespace NestingAssistant.Models
         [ExcelColumn(Name = "件数", Index = 2)]
         public int Piece { get; set; }
 
-        [ExcelColumn(Name = "标签", Index = 3)]
+        [ExcelColumn(Name = "序号", Index = 3)]
+        public int Index { get; set; }
+
+        [ExcelColumn(Name = "标签", Index = 4)]
         public string Label { get; set; }
     }
 }

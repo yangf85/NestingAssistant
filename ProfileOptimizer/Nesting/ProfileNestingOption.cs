@@ -11,5 +11,7 @@ namespace ProfileOptimizer.Nesting
         public int MaxSegments { get; set; } = 5;
 
         public double Spacing { get; set; } = 5;
+
+        public bool IsShowPartIndex { get; set; } = false;//在切割方案中显示零件序号
     }
 }

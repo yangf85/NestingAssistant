@@ -18,7 +18,7 @@ using Ursa.Controls;
 
 namespace NestingAssistant.ViewModels
 {
-    public partial class ProfileNestingViewModel : BasicViewModel
+    public partial class ProfileNesterViewModel : BasicViewModel
     {
         private ProfileNestingService _service;
 
@@ -28,31 +28,11 @@ namespace NestingAssistant.ViewModels
 
         public ObservableCollection<ProfileMaterialViewModel> ProfileMaterials { get; private set; } = [];
 
-        public ProfileNestingResultViewModel NestingResult { get; set; } = new();
+        public ProfileNestingSummaryViewModel Summary { get; set; } = new();
 
-        public ProfileNestingViewModel(IMessageBoxService messageBox, INotificationService notification, IMapper mapper, ProfileNestingService service)
- : base(messageBox, notification, mapper)
+        public ProfileNesterViewModel(IMessageBoxService messageBox, INotificationService notification, IMapper mapper, ProfileNestingService service) : base(messageBox, notification, mapper)
         {
             _service = service;
-
-            NestingResult.Materials.Add(new UsageProfileMaterialViewModel()
-            {
-                Type = "A",
-                Length = 2500,
-                Piece = 5,
-                Utilization = 0.85,
-
-                Parts = new ObservableCollection<UsageProfilePartViewModel>()
-                {
-                   new UsageProfilePartViewModel()
-                   {
-                       Type="A",
-                       Length=1000,
-                       Piece=2,
-                       Label="aa-01",
-                   }
-                }
-            });
         }
 
         [RelayCommand]
@@ -70,11 +50,11 @@ namespace NestingAssistant.ViewModels
                 switch (type)
                 {
                     case "Part":
-                        await _service.Excel.Export(new List<ProfilePartModel>(), Path.Combine(path, "ProfilePartTemplate.xlsx"));
+                        await _service.Excel.ExportAsync(new List<ProfilePartModel>(), Path.Combine(path, "ProfilePartTemplate.xlsx"));
                         break;
 
                     case "Material":
-                        await _service.Excel.Export(new List<ProfileMaterialModel>(), Path.Combine(path, "ProfileMaterialTemplate.xlsx"));
+                        await _service.Excel.ExportAsync(new List<ProfileMaterialModel>(), Path.Combine(path, "ProfileMaterialTemplate.xlsx"));
                         break;
                 }
 
@@ -139,7 +119,7 @@ namespace NestingAssistant.ViewModels
 
         private async Task ImportPartData(string filepath)
         {
-            var parts = await _service.Excel.Import<ProfilePartModel>(filepath);
+            var parts = await _service.Excel.ImportAsync<ProfilePartModel>(filepath);
             ProfileParts.Clear();
 
             foreach (var item in parts)
@@ -150,7 +130,7 @@ namespace NestingAssistant.ViewModels
 
         private async Task ImportMaterialData(string filepath)
         {
-            var materials = await _service.Excel.Import<ProfileMaterialModel>(filepath);
+            var materials = await _service.Excel.ImportAsync<ProfileMaterialModel>(filepath);
             ProfileMaterials.Clear();
 
             foreach (var item in materials)
@@ -162,12 +142,19 @@ namespace NestingAssistant.ViewModels
         [RelayCommand]
         private async Task Run()
         {
-            await Task.Delay(5000);
-            //await _service.Run(ProfileParts, ProfileMaterials, Option);
+            var parts = ProfileParts.Select(i => Mapper.Map<ProfilePart>(i)).ToList();
+            var materials = ProfileMaterials.Select(i => Mapper.Map<ProfileMaterial>(i)).ToList();
+            var option = Mapper.Map<ProfileNestingOption>(Option);
+
+            var summary = await _service.Run(parts, materials, option);
+
+            Summary = Mapper.Map<ProfileNestingSummaryViewModel>(summary);
+
+            OnPropertyChanged(nameof(Summary));
         }
 
         [RelayCommand]
-        private async Task ExportNestingResult()
+        private async Task ExportNestingSummary()
         {
             var option = new FilePickerSaveOptions()
             {
@@ -186,12 +173,12 @@ namespace NestingAssistant.ViewModels
 
             var filepath = file.TryGetLocalPath();
 
-            var dict = new Dictionary<string, object>();
+            var data = Mapper.Map<ProfileNestingSummary>(Summary);
 
-            dict["数据汇总"] = NestingResult.Summaries.Select(i => Mapper.Map<ProfileNestingSummaryModel>(i));
-            dict["排版汇总"] = NestingResult.Materials.Select(i => Mapper.Map<UsageProfileMaterialModel>(i));
+            //dict["数据汇总"] = NestingResult.Summaries.Select(i => Mapper.Map<ProfileNestingSummaryModel>(i));
+            //dict["排版汇总"] = NestingResult.Materials.Select(i => Mapper.Map<UsageProfileMaterialModel>(i));
 
-            await _service.Excel.ExportMultipleSheets(dict, filepath);
+            await _service.Excel.ExportByTemplateAsync(filepath, @"F:\OneDrive\桌面\ProfileNestingSummaryTemplate.xlsx", data);
         }
     }
 }

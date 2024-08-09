@@ -5,25 +5,35 @@ using ProfileOptimizer.Nesting;
 
 var materials = new List<ProfileMaterial>
         {
-            new ProfileMaterial { Length = 6000, Piece = 10 },
-            new ProfileMaterial { Length = 5000, Piece = 5 },
-            new ProfileMaterial { Length = 4000, Piece = 5 }
+            new ProfileMaterial { Type="A", Length = 6000, Piece = 10 },
+            new ProfileMaterial {Type="B", Length = 5000, Piece = 5 },
+            new ProfileMaterial {Type="A", Length = 4000, Piece = 5 }
         };
 
 var parts = new List<ProfilePart>
         {
-            new ProfilePart { Length = 1000, Piece = 15 },
-            new ProfilePart { Length = 1200, Piece = 10 },
-            new ProfilePart { Length = 1300, Piece = 8},
-            new ProfilePart { Length = 600, Piece = 8},
-            new ProfilePart { Length = 400, Piece = 20},
-            new ProfilePart { Length = 300, Piece = 18},
-            new ProfilePart { Length = 900, Piece = 32},
+            new ProfilePart {Type="A", Length = 1000, Piece = 15 },
+            new ProfilePart {Type="A", Length = 1200, Piece = 10 },
+            new ProfilePart {Type="B", Length = 1300, Piece = 8},
+            new ProfilePart {Type="B", Length = 600, Piece = 8},
+            new ProfilePart {Type="A", Length = 400, Piece = 20},
+            new ProfilePart {Type="B", Length = 300, Piece = 18},
+            new ProfilePart {Type="A", Length = 900, Piece = 32},
         };
 var option = new ProfileNestingOption()
 {
     MaxSegments = 10,
+    Spacing = 10,
+    IsShowPartIndex = true,
 };
 
-var nester = new ProfileNester(materials, parts, option);
-nester.Nest();
+var nester = new GreedyProfileNester(parts, materials, option);
+
+var progress = new Progress<double>(percent =>
+{
+    Console.WriteLine($"进度: {percent}%");
+});
+
+var summary = await nester.NestAsync();
+
+var t = 1;
